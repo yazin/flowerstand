@@ -22,10 +22,10 @@
           <v-btn color="success" class="ml-2" v-bind="attrs" v-on="on"><v-icon>mdi-cog</v-icon>管理</v-btn>
         </template>
         <v-list>
-          <v-list-item>
+          <v-list-item @click="onClickUpdate">
             <v-list-item-title>情報変更</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="checkAdminKey = true">
+          <v-list-item @click="onClickParticipantManage">
             <v-list-item-title>参加者管理</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -84,6 +84,7 @@ export default class FlowerStandDetail extends Vue {
   adminKey = '';
   checkAdminKey = false;
   adminKeyError = false;
+  nextPath = '';
 
   mounted() {
     this.loading = false;
@@ -103,6 +104,20 @@ export default class FlowerStandDetail extends Vue {
     return `https://${parts[2]}/@${parts[1]}`;
   }
 
+  private onClickUpdate() {
+    this.nextPath = `/update/${this.flowerStand.id}`;
+    this.adminKeyError = false;
+    this.adminKey = '';
+    this.checkAdminKey = true;
+  }
+
+  private onClickParticipantManage() {
+    this.nextPath = `/participantmanage/${this.flowerStand.id}`;
+    this.adminKeyError = false;
+    this.adminKey = '';
+    this.checkAdminKey = true;
+  }
+
   private async verifyAdminKey(): Promise<void> {
     if (!this.flowerStand.id) {
       this.$router.push('/error');
@@ -114,12 +129,14 @@ export default class FlowerStandDetail extends Vue {
         flowerStandId: this.flowerStand.id,
         adminKey: this.adminKey
       };
-      const res: AxiosResponse<void> = await axios.post<void>(`${process.env.VUE_APP_API_URL}/flowerstands/verify`, params);
+      const res: AxiosResponse<void> = await axios.put<void>(`${process.env.VUE_APP_API_URL}/flowerstands/verify`, params);
+      console.log(res);
+      console.log(this.nextPath);
       if (res.status === 200) {
         this.adminKeyError = false;
         this.checkAdminKey = false;
         this.loading = false;
-        this.$router.push(`/participantmanage/${this.flowerStand.id}?adminKey=${this.adminKey}`);
+        this.$router.push(`${this.nextPath}?adminKey=${this.adminKey}`);
       }
     } catch (err) {
       this.adminKeyError = true;

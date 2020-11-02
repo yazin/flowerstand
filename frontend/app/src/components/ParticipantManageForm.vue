@@ -28,7 +28,7 @@
     <v-dialog v-model="dialog" persistent>
       <v-card>
         <v-card-title class="headline">参加者削除</v-card-title>
-        <v-card-text>選択した参加者を削除します。この操作は取り消せません。実行しますか？</v-card-text>
+        <v-card-text>選択した参加者を削除します。この操作は取り消せません。削除しますか？</v-card-text>
         <v-card-actions>
           <v-btn dark color="red" @click="onClickDelete">削除</v-btn>
           <v-btn @click="dialog = false">キャンセル</v-btn>

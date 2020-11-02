@@ -66,8 +66,6 @@ export interface IFlowerStandUpdateRequestParams {
 export interface IFlowerStandUpdateRequestBody {
   adminKey: string;
   name?: string;
-  presentTo?: string;
-  presentFrom?: string;
   organizerName?: string;
   description?: string;
   projectUrl?: string;

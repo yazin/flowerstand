@@ -60,3 +60,11 @@ export interface FlowerStandCreateResponse {
   adminKey: string;
   participationCode: string;
 }
+
+export interface FlowerStandUpdateRequest {
+  adminKey: string;
+  name: string;
+  organizerName: string;
+  description: string;
+  projectUrl: string;
+}

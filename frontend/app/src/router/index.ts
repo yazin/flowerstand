@@ -29,6 +29,11 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "detail" */ '../views/Detail.vue')
   },
   {
+    path: '/update/:id',
+    name: 'Update',
+    component: () => import(/* webpackChunkName: "update" */ '../views/Update.vue')
+  },
+  {
     path: '/participantmanage/:id',
     name: 'ManageParticipant',
     component: () => import(/* webpackChunkName: "participantmanage" */ '../views/ParticipantManage.vue')

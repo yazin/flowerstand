@@ -45,7 +45,6 @@ export default class Detail extends Vue {
   isError = false;
   errorText = '';
   errorCaptured(err: Error): boolean {
-    console.log('errorCaptured');
     console.error(err.message);
     this.errorText = err.message;
     this.isError = true;
