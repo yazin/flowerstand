@@ -27,6 +27,16 @@ const routes: Array<RouteConfig> = [
     path: '/detail/:id',
     name: 'Detail',
     component: () => import(/* webpackChunkName: "detail" */ '../views/Detail.vue')
+  },
+  {
+    path: '/participantmanage/:id',
+    name: 'ManageParticipant',
+    component: () => import(/* webpackChunkName: "participantmanage" */ '../views/ParticipantManage.vue')
+  },
+  {
+    path: '/error',
+    name: 'ErrorPage',
+    component: () => import(/* webpackChunkName: "error" */ '../views/ErrorPage.vue')
   }
 ]
 

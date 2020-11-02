@@ -14,6 +14,7 @@ import {
   IFlowerStandPreview,
   IFlowerStandGetRequestParams,
   IFlowerStandSearchRequestQuery,
+  IFlowerStandVerifyAdminKeyRequestBody,
   IFlowerStandPreviewRequestBody,
   IFlowerStandAddRequestBody,
   IFlowerStandUpdateRequestParams,
@@ -63,6 +64,26 @@ export class FlowerStandController {
         return this.toInterface(flowerStand);
       }, this);
       return res.status(StatusCodes.OK).json(ret);
+    } catch (err: any) {
+      Logger.Err(err);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
+    }
+  }
+
+  @Post('verify')
+  private async verifyAdminKey(req: Request<void, void, IFlowerStandVerifyAdminKeyRequestBody, void>, res:Response<void>): Promise<Response<void>> {
+    try {
+      const repo: Repository<FlowerStand> = getRepository(FlowerStand);
+      const flowerStand: FlowerStand | undefined = await repo.findOne(req.body.flowerStandId);
+      if (!flowerStand) {
+        return res.status(StatusCodes.NO_CONTENT).json();
+      }
+
+      if (flowerStand.adminKey === req.body.adminKey) {
+        return res.status(StatusCodes.OK).json();
+      } else {
+        return res.status(StatusCodes.UNAUTHORIZED).json();
+      }
     } catch (err: any) {
       Logger.Err(err);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();

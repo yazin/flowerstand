@@ -35,6 +35,11 @@ export interface IFlowerStandSearchRequestQuery {
   baseDesignId?: number
 }
 
+export interface IFlowerStandVerifyAdminKeyRequestBody {
+  flowerStandId: number,
+  adminKey: string
+}
+
 export interface IFlowerStandPreviewRequestBody {
   presentTo: string,
   presentFrom: string,

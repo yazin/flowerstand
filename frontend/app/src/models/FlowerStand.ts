@@ -17,6 +17,11 @@ export interface FlowerStand {
   baseDesign: BaseDesign;
 }
 
+export interface FlowerStandVerifyAdminKeyRequestBody {
+  flowerStandId: number;
+  adminKey: string;
+}
+
 export interface FlowerStandPreviewRequest {
   presentTo: string;
   presentFrom: string;

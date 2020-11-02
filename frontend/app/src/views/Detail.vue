@@ -9,7 +9,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse } from 'axios';
 import { FlowerStand } from '../models/FlowerStand';
-import FlowerStandDetail from '../components/FlowerStandDetail.vue'
+import FlowerStandDetail from '../components/FlowerStandDetail.vue';
 
 @Component({
   components: {
@@ -45,7 +45,8 @@ export default class Detail extends Vue {
   isError = false;
   errorText = '';
   errorCaptured(err: Error): boolean {
-    console.error(err);
+    console.log('errorCaptured');
+    console.error(err.message);
     this.errorText = err.message;
     this.isError = true;
     return false;

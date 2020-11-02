@@ -25,7 +25,7 @@
           <v-list-item>
             <v-list-item-title>情報変更</v-list-item-title>
           </v-list-item>
-          <v-list-item>
+          <v-list-item @click="checkAdminKey = true">
             <v-list-item-title>参加者管理</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -54,17 +54,36 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+    <v-dialog v-model="checkAdminKey" persistent>
+      <v-card>
+        <v-card-title class="headline">管理キー</v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="adminKey"
+            label="管理キー"/>
+        </v-card-text>
+        <v-card-text v-if="adminKeyError"><strong class="red--text text--lighten-1">管理キーが無効です</strong></v-card-text>
+        <v-card-actions>
+          <v-btn dark color="primary" @click="verifyAdminKey">確認</v-btn>
+          <v-btn @click="cancelVerify">キャンセル</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { FlowerStand } from '../models/FlowerStand';
+import axios, { AxiosResponse } from 'axios';
+import { FlowerStand, FlowerStandVerifyAdminKeyRequestBody } from '../models/FlowerStand';
 
 @Component
 export default class FlowerStandDetail extends Vue {
   @Prop() private readonly flowerStand!: FlowerStand;
   loading = true;
+  adminKey = '';
+  checkAdminKey = false;
+  adminKeyError = false;
 
   mounted() {
     this.loading = false;
@@ -82,6 +101,39 @@ export default class FlowerStandDetail extends Vue {
     }
 
     return `https://${parts[2]}/@${parts[1]}`;
+  }
+
+  private async verifyAdminKey(): Promise<void> {
+    if (!this.flowerStand.id) {
+      this.$router.push('/error');
+      return;
+    }
+    this.loading = true;
+    try {
+      const params: FlowerStandVerifyAdminKeyRequestBody = {
+        flowerStandId: this.flowerStand.id,
+        adminKey: this.adminKey
+      };
+      const res: AxiosResponse<void> = await axios.post<void>(`${process.env.VUE_APP_API_URL}/flowerstands/verify`, params);
+      if (res.status === 200) {
+        this.adminKeyError = false;
+        this.checkAdminKey = false;
+        this.loading = false;
+        this.$router.push(`/participantmanage/${this.flowerStand.id}?adminKey=${this.adminKey}`);
+      }
+    } catch (err) {
+      this.adminKeyError = true;
+      this.loading = false;
+    }
+
+    this.adminKeyError = true;
+    this.loading = false;
+  }
+
+  private cancelVerify() {
+    this.adminKey = '';
+    this.adminKeyError = false;
+    this.checkAdminKey = false;
   }
 }
 </script>
