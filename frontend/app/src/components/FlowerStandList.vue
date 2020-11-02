@@ -11,7 +11,7 @@
     </v-row>
     <v-row justify="center">
       <v-col v-for="item in flowerStands" :key="item.id" cols="12" sm="12" md="6" lg="3">
-        <FlowerStandItem v-bind:flowerStand="item"/>
+        <FlowerStandListItem v-bind:flowerStand="item"/>
       </v-col>
     </v-row>
   </v-container>
@@ -21,12 +21,12 @@
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse } from 'axios';
 import { FlowerStand } from '../models/FlowerStand';
-import FlowerStandItem from './FlowerStandItem.vue';
+import FlowerStandListItem from './FlowerStandListItem.vue';
 import FlowerStandFilterForm, { FilterCondition } from './FlowerStandFilterForm.vue';
 
 @Component({
   components: {
-    FlowerStandItem,
+    FlowerStandListItem,
     FlowerStandFilterForm
   }
 })

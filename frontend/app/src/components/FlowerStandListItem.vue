@@ -18,7 +18,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { FlowerStand } from '../models/FlowerStand';
 
 @Component
-export default class FlowerStandItem extends Vue {
+export default class FlowerStandListItem extends Vue {
   @Prop() private readonly flowerStand!: FlowerStand;
 }
 </script>
