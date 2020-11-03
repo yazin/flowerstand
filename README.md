@@ -55,3 +55,7 @@ That's all. Access `http://localhost:8080` for test.
 - TypeScript
 
 Front-end may not working correctly on some old browsers. I have no plan to support them. For Windows user, let's uninstall IE11 and upgrade Edge to Chromium edition for better world.
+
+## API
+
+[available on SwaggerHub](https://app.swaggerhub.com/apis/uranohoshi-se/flowerstand/1.0.0)

@@ -173,6 +173,9 @@ paths:
                 type: integer
               eventId:
                 type: integer
+              panel:
+                type: string
+                description: optional illust panel image (jpeg or png), Data URI format.
             required:
               - name
               - presentTo
@@ -187,6 +190,31 @@ paths:
             $ref: "#/definitions/FlowerStandWithKeys"
         204:
           description: baseDesignId or eventId does not exists.
+  /flowerstands/verify:
+    post:
+      summary: verify admin key.
+      parameters:
+        -
+          name: keyData
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              flowerStandId:
+                type: integer
+              adminKey:
+                type: string
+            required:
+              - flowerStandId
+              - adminKey
+      responses:
+        200:
+          description: OK
+        204:
+          description: flower stand with specified id does not exists.
+        401:
+          description: invalid adminKey.
   /flowerstands/preview:
     post:
       summary: returns a preview image.
