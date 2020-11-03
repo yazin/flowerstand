@@ -8,7 +8,7 @@
       {{flowerStand.description}}
     </v-card-text>
     <v-card-actions>
-      <v-btn class="ma-2" color="primary" dark :to="`/detail/${flowerStand.id}`"><v-icon dark light>mdi-eye</v-icon>このフラスタを見る</v-btn>
+      <v-btn class="ma-2" color="primary" dark :to="`/detail/${flowerStand.id}`"><v-icon dark>mdi-eye</v-icon>このフラスタを見る</v-btn>
     </v-card-actions>
   </v-card>
 </template>

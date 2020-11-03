@@ -70,7 +70,7 @@ export class FlowerStandController {
     }
   }
 
-  @Put('verify')
+  @Post('verify')
   private async verifyAdminKey(req: Request<void, void, IFlowerStandVerifyAdminKeyRequestBody, void>, res:Response<void>): Promise<Response<void>> {
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);

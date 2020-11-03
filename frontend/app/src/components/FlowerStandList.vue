@@ -11,7 +11,7 @@
     </v-row>
     <v-row justify="center">
       <v-col v-for="item in flowerStands" :key="item.id" cols="12" sm="12" md="6" lg="3">
-        <FlowerStandListItem v-bind:flowerStand="item"/>
+        <FlowerStandListItem :flowerStand="item"/>
       </v-col>
     </v-row>
   </v-container>
@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 import { FlowerStand } from '../models/FlowerStand';
 import FlowerStandListItem from './FlowerStandListItem.vue';
 import FlowerStandFilterForm, { FilterCondition } from './FlowerStandFilterForm.vue';
@@ -37,13 +37,18 @@ export default class FlowerStandList extends Vue {
   private allFlowerStands: FlowerStand[] = [];
 
   async mounted() {
-    const flowerStands: AxiosResponse<FlowerStand[]> = await axios.get<FlowerStand[]>(`${process.env.VUE_APP_API_URL}/flowerstands`);
-    if (flowerStands.status !== 200) {
-      throw new Error(`データ取得に失敗しました code:${flowerStands.status}`);
-    }
+    try {
+      const flowerStands: AxiosResponse<FlowerStand[]> = await axios.get<FlowerStand[]>(`${process.env.VUE_APP_API_URL}/flowerstands`);
+      if (flowerStands.status !== 200) {
+        throw new Error(`データ取得に失敗しました code:${flowerStands.status}`);
+      }
 
-    this.flowerStands = flowerStands.data;
-    this.allFlowerStands = flowerStands.data;
+      this.flowerStands = flowerStands.data;
+      this.allFlowerStands = flowerStands.data;
+    } catch (err) {
+      const e: AxiosError<FlowerStand[]> = err;
+      throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+    }
   }
 
   changeFilter(condition: FilterCondition) {

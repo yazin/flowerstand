@@ -21,11 +21,11 @@
         </v-list-item>
       </v-list>
       <v-card-actions>
-        <v-btn dark color="red" @click="dialog = true"><v-icon>mdi-account-multiple-remove</v-icon>削除</v-btn>
+        <v-btn dark color="red" @click="confirm = true"><v-icon>mdi-account-multiple-remove</v-icon>削除</v-btn>
         <v-btn :to="`/detail/${flowerStand.id}`" exact><v-icon>mdi-backup-restore</v-icon>キャンセル</v-btn>
       </v-card-actions>
     </v-card>
-    <v-dialog v-model="dialog" persistent>
+    <v-dialog v-model="confirm" persistent>
       <v-card>
         <v-card-title class="headline">参加者削除</v-card-title>
         <v-card-text>選択した参加者を削除します。この操作は取り消せません。削除しますか？</v-card-text>
@@ -46,7 +46,7 @@ import { FlowerStand } from '../models/FlowerStand';
 export default class ParticipantManageForm extends Vue {
   @Prop() private readonly flowerStand!: FlowerStand;
   loading = true;
-  dialog = false;
+  confirm = false;
   selected: number[] = [];
 
   mounted() {
@@ -55,7 +55,7 @@ export default class ParticipantManageForm extends Vue {
 
   @Emit('delete')
   onClickDelete(): number[] {
-    this.dialog = false;
+    this.confirm = false;
     return this.selected;
   }
 }

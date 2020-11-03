@@ -52,7 +52,7 @@
 
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 import { Event } from '../models/Event';
 import { Group } from '../models/Group';
 import { BaseDesign } from '../models/BaseDesign';
@@ -79,28 +79,33 @@ export default class FlowerStandFilterForm extends Vue {
   private allBaseDesigns: BaseDesign[] = [];
 
   async mounted() {
-    const events: AxiosResponse<Event[]> = await axios.get<Event[]>(`${process.env.VUE_APP_API_URL}/events`);
-    if (events.status === 200) {
-      this.events = events.data;
-      this.allEvents = events.data;
-    } else {
-      throw new Error(`データ取得に失敗しました code:${events.status}`);
-    }
+    try {
+      const events: AxiosResponse<Event[]> = await axios.get<Event[]>(`${process.env.VUE_APP_API_URL}/events`);
+      if (events.status === 200) {
+        this.events = events.data;
+        this.allEvents = events.data;
+      } else {
+        throw new Error(`データ取得に失敗しました code:${events.status}`);
+      }
 
-    const groups: AxiosResponse<Group[]> = await axios.get<Group[]>(`${process.env.VUE_APP_API_URL}/groups`);
-    if (groups.status === 200) {
-      this.groups = groups.data;
-      this.allGroups = groups.data;
-    } else {
-      throw new Error(`データ取得に失敗しました code:${events.status}`);
-    }
+      const groups: AxiosResponse<Group[]> = await axios.get<Group[]>(`${process.env.VUE_APP_API_URL}/groups`);
+      if (groups.status === 200) {
+        this.groups = groups.data;
+        this.allGroups = groups.data;
+      } else {
+        throw new Error(`データ取得に失敗しました code:${events.status}`);
+      }
 
-    const baseDesigns: AxiosResponse<BaseDesign[]> = await axios.get<BaseDesign[]>(`${process.env.VUE_APP_API_URL}/basedesigns`);
-    if (baseDesigns.status === 200) {
-      this.baseDesigns = baseDesigns.data;
-      this.allBaseDesigns = baseDesigns.data;
-    } else {
-      throw new Error(`データ取得に失敗しました code:${events.status}`);
+      const baseDesigns: AxiosResponse<BaseDesign[]> = await axios.get<BaseDesign[]>(`${process.env.VUE_APP_API_URL}/basedesigns`);
+      if (baseDesigns.status === 200) {
+        this.baseDesigns = baseDesigns.data;
+        this.allBaseDesigns = baseDesigns.data;
+      } else {
+        throw new Error(`データ取得に失敗しました code:${events.status}`);
+      }
+    } catch (err) {
+      const e: AxiosError = err;
+      throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
   }
 

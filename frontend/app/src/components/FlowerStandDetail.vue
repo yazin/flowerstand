@@ -129,9 +129,8 @@ export default class FlowerStandDetail extends Vue {
         flowerStandId: this.flowerStand.id,
         adminKey: this.adminKey
       };
-      const res: AxiosResponse<void> = await axios.put<void>(`${process.env.VUE_APP_API_URL}/flowerstands/verify`, params);
-      console.log(res);
-      console.log(this.nextPath);
+      const res: AxiosResponse<void> = await axios.post<void>(`${process.env.VUE_APP_API_URL}/flowerstands/verify`, params);
+
       if (res.status === 200) {
         this.adminKeyError = false;
         this.checkAdminKey = false;

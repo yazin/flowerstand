@@ -91,7 +91,7 @@ export default class Update extends Vue {
       }
       this.$router.push(`/detail/${this.flowerStand.id}`);
     } catch (err) {
-      const e: AxiosError<FlowerStand> = err;
+      const e: AxiosError<void> = err;
       this.errorText = `データ更新に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
       this.isError = true;
     }
