@@ -137,7 +137,7 @@ export class FlowerStandController {
       remoteIp = remoteIp.replace(/^.*:/, '');
 
       const designRepo: Repository<BaseDesign> = getRepository(BaseDesign);
-      const baseDesign: BaseDesign | undefined = await designRepo.findOne(req.body.baseDesignId);
+      const baseDesign: BaseDesign | undefined = await designRepo.findOne(req.body.baseDesignId, {relations: ['group']});
       if (!baseDesign) {
         return res.status(StatusCodes.NO_CONTENT).json();
       }
@@ -166,9 +166,14 @@ export class FlowerStandController {
         Logger.Err('flower stand id not defined, should not reach here');
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
       }
-
-      const ret: IFlowerStandWithKeys = this.toInterfaceWithKeys(newStand);
-      return res.status(StatusCodes.OK).json(ret);
+      try {
+        const ret: IFlowerStandWithKeys = this.toInterfaceWithKeys(newStand);
+        return res.status(StatusCodes.OK).json(ret);
+      } catch (err) {
+        Logger.Err(err);
+        await fsRepo.remove(newStand);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
+      }
     } catch (err: any) {
       Logger.Err(err);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();

@@ -151,14 +151,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Emit, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse } from 'axios';
 import { ValidationProvider, extend } from 'vee-validate';
 import { required, max, mimes, size } from 'vee-validate/dist/rules';
-import { FlowerStandPreviewRequest, FlowerStandPreviewResponse, FlowerStandCreateRequest, FlowerStandCreateResponse } from '../models/FlowerStand';
+import { FlowerStandPreviewRequest, FlowerStandPreviewResponse } from '../models/FlowerStand';
 import { Event } from '../models/Event';
 import { Group } from '../models/Group';
 import { BaseDesign } from '../models/BaseDesign';
+
+export interface FlowerStandCreateData {
+  name: string;
+  presentTo: string;
+  presentFrom: string;
+  description: string;
+  projectUrl: string;
+  organizerName: string;
+  eventId: number;
+  baseDesignId: number;
+  panel: Blob | null;
+}
 
 extend('required', required);
 extend('max', max);
@@ -281,27 +293,12 @@ export default class FlowerStandCreateForm extends Vue {
     this.preview = true;
   }
 
+  @Emit('create')
   onSubmit() {
-    this.progress = true;
-    if (this.panel) {
-      let imageData: string | ArrayBuffer | null = null;
-      const reader: FileReader = new FileReader();
-      reader.onload = (): void => {
-        imageData = reader.result;
-        this.postSubmit(imageData);
-      }
-      reader.readAsDataURL(this.panel);
-    } else {
-      this.postSubmit();
-    }
-    this.progress = false;
-  }
-
-  private async postSubmit(panel: string | ArrayBuffer | null = null) {
     if (!this.event || !this.baseDesign) {
       return;
     }
-    const request: FlowerStandCreateRequest = {
+    const data: FlowerStandCreateData = {
       name: this.name,
       presentTo: this.presentTo,
       presentFrom: this.presentFrom,
@@ -310,11 +307,9 @@ export default class FlowerStandCreateForm extends Vue {
       organizerName: this.organizerName,
       eventId: this.event.id,
       baseDesignId: this.baseDesign.id,
-      panel: panel
+      panel: this.panel
     }
-
-    const res: AxiosResponse<FlowerStandCreateResponse> = await axios.post<FlowerStandCreateResponse>(`${process.env.VUE_APP_API_URL}/flowerstands`, request);
-    console.log(res);
+    return data;
   }
 }
 </script>
