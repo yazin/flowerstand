@@ -9,6 +9,46 @@
         indeterminate/>
     </v-overlay>
     <FlowerStandCreateForm @create="onCreate"/>
+    <v-dialog v-model="showResult" ref="successDialog" persistent>
+      <v-card>
+        <v-card-title class="headline">成功</v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col>
+                <div>フラワースタンドを作成しました。以下の「管理キー」と「参加コード」を必ず記録してください。このダイアログを閉じると以降確認できません。</div>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="12" md="6">
+                <v-text-field
+                  label="管理キー"
+                  ref="adminKeyField"
+                  class="ma-2"
+                  :value="newStand ? newStand.adminKey : ''"
+                  readonly
+                  append-outer-icon="mdi-content-copy"
+                  @click:append-outer="onCopyAdminKey"/>
+              </v-col>
+              <v-col cols="12" sm="12" md="6">
+                <v-text-field
+                  label="参加コード"
+                  ref="participationCodeField"
+                  class="ma-2"
+                  :value="newStand ? newStand.participationCode : ''"
+                  readonly
+                  append-outer-icon="mdi-content-copy"
+                  @click:append-outer="onCopyParticipationCode"/>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" :to="`/detail/${newStand ? newStand.id : ''}`">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-snackbar v-model="copied" timeout="2000">Copied!</v-snackbar>
   </div>
 </template>
 
@@ -33,6 +73,12 @@ export default class Create extends Vue {
     this.isError = true;
     return false;
   }
+
+  showResult = false;
+  newStand: FlowerStandCreateResponse | null = null;
+  copied = false;
+
+  private isVue = (x: unknown): x is Vue => x instanceof Vue;
 
   private onCreate(data: FlowerStandCreateData) {
     this.progress = true;
@@ -66,13 +112,42 @@ export default class Create extends Vue {
         this.progress = false;
         this.isError = true;
       }
-      this.$router.push(`/detail/${res.data.id}`);
+      this.newStand = res.data;
+      this.showResult = true;
     } catch (err) {
       const e: AxiosError<FlowerStandCreateResponse> = err;
       this.errorText = `フラワースタンド作成に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
       this.progress = false;
       this.isError = true;
     }
+  }
+
+  private async onCopyAdminKey(): Promise<void> {
+    if (!this.newStand) {
+      return;
+    }
+
+    const { adminKeyField } = this.$refs;
+    if (!this.isVue(adminKeyField)) {
+      return;
+    }
+
+    await this.$copyText(this.newStand.adminKey, adminKeyField.$el);
+    this.copied = true;
+  }
+
+  private async onCopyParticipationCode(): Promise<void> {
+    if (!this.newStand) {
+      return;
+    }
+
+    const { participationCodeField } = this.$refs;
+    if (!this.isVue(participationCodeField)) {
+      return;
+    }
+
+    await this.$copyText(this.newStand.participationCode, participationCodeField.$el);
+    this.copied = true;
   }
 }
 </script>
