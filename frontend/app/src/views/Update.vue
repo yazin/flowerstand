@@ -52,13 +52,15 @@ export default class Update extends Vue {
     return false;
   }
 
-  async mounted() {
+  created() {
     if (!this.$route.query.adminKey || typeof this.$route.query.adminKey !== 'string' || this.$route.query.adminKey.length === 0) {
       this.$router.push('/error');
-      return;
     }else {
       this.adminKey = this.$route.query.adminKey;
     }
+  }
+
+  async mounted() {
     try {
       const res: AxiosResponse<FlowerStand> = await axios.get<FlowerStand>(`${process.env.VUE_APP_API_URL}/flowerstands/${this.$route.params.id}`);
       if (res.status !== 200) {

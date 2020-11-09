@@ -35,6 +35,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar v-model="success" timeout="2000">削除しました</v-snackbar>
   </v-form>
 </template>
 
@@ -48,6 +49,8 @@ export default class ParticipantManageForm extends Vue {
   loading = true;
   confirm = false;
   selected: number[] = [];
+
+  success = false;
 
   mounted() {
     this.loading = false;
