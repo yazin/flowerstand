@@ -10,8 +10,8 @@ updates:
     reviewers:
       - yazin
     ignore:
-      - dependency_name: "@types/node"
-        version: ["14.x"]
+      - dependency-name: "@types/node"
+        versions: ["14.x"]
   - package-ecosystem: npm
     directory: "/app"
     schedule:
