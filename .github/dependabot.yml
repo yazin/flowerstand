@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/frontend/app"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+    target-branch: develop
+    reviewers:
+      - yazin
+    ignore:
+      - dependency-name: "@types/node"
+        versions: ["14.x"]
+  - package-ecosystem: npm
+    directory: "/app"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+    target-branch: develop
+    reviewers:
+      - yazin
