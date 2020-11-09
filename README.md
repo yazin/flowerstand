@@ -23,8 +23,8 @@ Nothing to do for development.
 ### Install packages and initialize Database
 
 ```
-$ docker-compose run --rm app npm install
-$ docker-compose run --rm web npm install
+$ docker-compose run --rm --no-deps app npm install
+$ docker-compose run --rm --no-deps web npm install
 $ docker-compose up -d
 ```
 
