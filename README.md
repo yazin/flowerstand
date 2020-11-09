@@ -58,4 +58,4 @@ Front-end may not working correctly on some old browsers. I have no plan to supp
 
 ## API
 
-[available on SwaggerHub](https://app.swaggerhub.com/apis/yazin/flowerstand/0.0.1)
+[available on SwaggerHub](https://app.swaggerhub.com/apis/yazin/flowerstand/)
