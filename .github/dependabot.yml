@@ -6,27 +6,28 @@ updates:
       interval: daily
       timezone: Asia/Tokyo
       time: "19:00"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 20
     target-branch: develop
     reviewers:
       - yazin
     ignore:
       - dependency-name: "@types/node"
-        versions: ["13.x.x", "14.x.x"]
+        versions: [">12.x.x"]
   - package-ecosystem: npm
     directory: "/app"
     schedule:
       interval: daily
       timezone: Asia/Tokyo
       time: "19:00"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 20
     target-branch: develop
     reviewers:
       - yazin
   - package-ecosystem: docker
     directory: "/mysql"
     schedule:
-      interval: daily
+      interval: weekly
+      day: "friday"
       timezone: Asia/Tokyo
       time: "19:00"
     open-pull-requests-limit: 10
