@@ -1,7 +1,7 @@
 version: '3'
 services:
   mysql:
-    image: mysql:8.0.22
+    build: ./mysql
     container_name: flowerstand_mysql
     env_file: ./mysql/mysql.env
     environment: 
@@ -11,7 +11,6 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./mysql/conf:/etc/mysql/conf.d/:ro
       - mysqldata:/var/lib/mysql
     networks:
       - flowerstand
