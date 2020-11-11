@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: daily
       timezone: Asia/Tokyo
-      time: 19:00
+      time: "19:00"
     open-pull-requests-limit: 20
     target-branch: "develop"
     reviewers:
@@ -18,7 +18,7 @@ updates:
     schedule:
       interval: daily
       timezone: Asia/Tokyo
-      time: 19:00
+      time: "19:00"
     open-pull-requests-limit: 20
     target-branch: develop
     reviewers:
@@ -29,7 +29,7 @@ updates:
       interval: weekly
       day: friday
       timezone: Asia/Tokyo
-      time: 19:00
+      time: "19:00"
     open-pull-requests-limit: 1
     target-branch: develop
     reviewers:
@@ -40,7 +40,7 @@ updates:
       interval: weekly
       day: friday
       timezone: Asia/Tokyo
-      time: 19:00
+      time: "19:00"
     open-pull-requests-limit: 1
     target-branch: develop
     reviewers:
@@ -51,7 +51,7 @@ updates:
       interval: weekly
       day: friday
       timezone: Asia/Tokyo
-      time: 19:00
+      time: "19:00"
     open-pull-requests-limit: 1
     target-branch: develop
     reviewers:
