@@ -15,31 +15,25 @@ services:
     networks:
       - flowerstand
   app:
-    image: node:12.19.0
+    build: ./app
     container_name: flowerstand_app
     env_file: ./app/app.env
-    environment: 
-      TZ: Asia/Tokyo
     ports:
       - 3000:3000
     volumes:
       - ./app:/app
-    working_dir: /app
     command: npm run dev:watch
     networks:
       - flowerstand
     depends_on:
       - mysql
   web:
-    image: node:12.19.0-alpine
+    build: ./frontend/app
     container_name: flowerstand_web
-    environment:
-      TZ: Asia/Tokyo
     ports:
       - 8080:8080
     volumes:
       - ./frontend/app:/app
-    working_dir: /app
     command: npm run serve
     networks:
       - flowerstand

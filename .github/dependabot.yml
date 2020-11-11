@@ -1,36 +1,58 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: "/frontend/app"
+    directory: /frontend/app
     schedule:
       interval: daily
       timezone: Asia/Tokyo
-      time: "19:00"
+      time: 19:00
     open-pull-requests-limit: 20
-    target-branch: develop
+    target-branch: "develop"
     reviewers:
       - yazin
     ignore:
       - dependency-name: "@types/node"
         versions: [">12.x.x"]
   - package-ecosystem: npm
-    directory: "/app"
+    directory: /app
     schedule:
       interval: daily
       timezone: Asia/Tokyo
-      time: "19:00"
+      time: 19:00
     open-pull-requests-limit: 20
     target-branch: develop
     reviewers:
       - yazin
   - package-ecosystem: docker
-    directory: "/mysql"
+    directory: /mysql
     schedule:
       interval: weekly
-      day: "friday"
+      day: friday
       timezone: Asia/Tokyo
-      time: "19:00"
-    open-pull-requests-limit: 10
+      time: 19:00
+    open-pull-requests-limit: 1
+    target-branch: develop
+    reviewers:
+      - yazin
+  - package-ecosystem: docker
+    directory: /app
+    schedule:
+      interval: weekly
+      day: friday
+      timezone: Asia/Tokyo
+      time: 19:00
+    open-pull-requests-limit: 1
+    target-branch: develop
+    reviewers:
+      - yazin
+  - package-ecosystem: docker
+    directory: /frontend/app
+    schedule:
+      interval: weekly
+      day: friday
+      timezone: Asia/Tokyo
+      time: 19:00
+    open-pull-requests-limit: 1
     target-branch: develop
     reviewers:
       - yazin
