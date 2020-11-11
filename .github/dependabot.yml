@@ -45,6 +45,9 @@ updates:
     target-branch: develop
     reviewers:
       - yazin
+    ignore:
+      - dependency-name: node
+        versions: [">12.x.x"]
   - package-ecosystem: docker
     directory: /frontend/app
     schedule:
@@ -56,3 +59,6 @@ updates:
     target-branch: develop
     reviewers:
       - yazin
+    ignore:
+      - dependency-name: node
+        versions: [">12.x.x-alpine"]
