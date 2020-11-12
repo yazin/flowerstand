@@ -16,7 +16,7 @@
       <a v-if="flowerStand.projectUrl" :href="flowerStand.projectUrl" target="_blank" rel="noopner">{{flowerStand.projectUrl}}</a>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" class="mr-2"><v-icon>mdi-account-plus</v-icon>参加</v-btn>
+      <v-btn color="primary" class="mr-2" @click="onClickParticipate"><v-icon>mdi-account-plus</v-icon>参加</v-btn>
       <v-menu offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="success" class="ml-2" v-bind="attrs" v-on="on"><v-icon>mdi-cog</v-icon>管理</v-btn>
@@ -102,6 +102,14 @@ export default class FlowerStandDetail extends Vue {
     }
 
     return `https://${parts[2]}/@${parts[1]}`;
+  }
+
+  private onClickParticipate() {
+    if (!this.flowerStand.id) {
+      this.$router.push('/error');
+      return;
+    }
+    this.$router.push(`/participate/${this.flowerStand.id}`);
   }
 
   private onClickUpdate() {
