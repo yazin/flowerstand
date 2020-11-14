@@ -1,160 +1,170 @@
 <template>
-  <v-form ref="form">
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <div class="text-h4 my-4">フラワースタンド作成</div>
-        </v-col>
-      </v-row>
-      <v-row justify="space-between">
-        <v-col cols="12" sm="12" md="6">
-          <ValidationProvider name="イベント" rules="required" v-slot="{ errors, valid }">
-            <v-select
-              dense
-              clearable
-              v-model="event"
-              :items="events"
-              item-text="name"
-              item-value="id"
-              return-object
-              @change="onChangeEvent"
-              :success="valid"
-              :error-messages="errors"
-              label="イベント"/>
-          </ValidationProvider>
-        </v-col>
-        <v-col cols="12" sm="12" md="6">
-          <ValidationProvider name="デザイン" rules="required" v-slot="{ errors, valid }">
-            <v-select
-              dense
-              clearable
-              v-model="baseDesign"
-              :items="baseDesigns"
-              item-text="name"
-              item-value="id"
-              return-object
-              @change="onChangeBaseDesign"
-              :success="valid"
-              :error-messages="errors"
-              label="デザイン"/>
-          </ValidationProvider>
-        </v-col>
-      </v-row>
-      <v-row v-if="baseDesign">
-        <v-col cols="12" xl="12">
-          <v-img v-bind:src="baseDesign.imageUrl" max-width="25%"/>
-        </v-col>
-      </v-row>
-      <v-row justify="space-between">
-        <v-col cols="12">
-          <ValidationProvider name="タイトル" rules="required|max:100" v-slot="{ errors, valid }">
-            <v-text-field
-              v-model="name"
-              :counter="100"
-              label="タイトル"
-              :success="valid"
-              :error-messages="errors"
-              required/>
-          </ValidationProvider>
-        </v-col>
-        <v-col cols="12">
-          <ValidationProvider name="宛名名義" rules="required|max:100" v-slot="{ errors, valid }">
-            <v-text-field
-              v-model="presentTo"
-              :counter="100"
-              label="宛名名義"
-              :success="valid"
-              :error-messages="errors"
-              required/>
-          </ValidationProvider>
-        </v-col>
-        <v-col cols="12">
-          <ValidationProvider name="贈り主名義" rules="required|max:100" v-slot="{ errors, valid }">
-            <v-text-field
-              v-model="presentFrom"
-              :counter="100"
-              label="贈り主名義"
-              :success="valid"
-              :error-messages="errors"
-              required/>
-          </ValidationProvider>
-        </v-col>
-        <v-col cols="12">
-          <ValidationProvider name="企画者名" rules="required|max:100" v-slot="{ errors, valid }">
-            <v-text-field
-              v-model="organizerName"
-              :counter="100"
-              label="企画者名"
-              :success="valid"
-              :error-messages="errors"
-              required/>
-          </ValidationProvider>
-        </v-col>
-        <v-col cols="12">
-          <v-textarea
-            v-model="description"
-            label="フラワースタンドの詳細説明・メッセージなど（任意）"/>
-        </v-col>
-        <v-col cols="12">
-          <v-text-field
-            v-model="projectUrl"
-            label="URL（任意）"/>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <ValidationProvider name="パネルイラスト" rules="mimes:image/jpeg,image/png|size:1024" v-slot="{ errors, valid }">
-            <v-file-input
-              v-model="panel"
-              accept=".jpg,.jpeg,.png"
-              label="パネルイラスト（任意・JPEGもしくはPNG形式・1MB以内）"
-              :success="valid"
-              :error-messages="errors"
-              prepend-icon="mdi-image"/>
-          </ValidationProvider>
-        </v-col>
-      </v-row>
-      <v-row v-if="preview">
-        <v-col cols="12">
-          <v-img v-bind:src="imageUrl" max-width="50%"/>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-btn
-            color="success"
-            class="ma-4"
-            @click="onPreview">
-            プレビュー
-          </v-btn>
-          <v-btn
-            color="primary"
-            class="ma-4"
-            @click="onSubmit">
-            作成
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-overlay :value="progress">
-            <v-progress-circular
-              :size="70"
-              :width="7"
-              color="#e4007f"
-              indeterminate/>
-          </v-overlay>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-form>
+  <ValidationObserver v-slot="{ invalid }">
+    <v-form ref="form">
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <div class="text-h4 my-4">フラワースタンド作成</div>
+          </v-col>
+        </v-row>
+        <v-row justify="space-between">
+          <v-col cols="12" sm="12" md="6">
+            <ValidationProvider name="イベント" rules="required" v-slot="{ errors, valid }">
+              <v-select
+                dense
+                clearable
+                v-model="event"
+                :items="events"
+                item-text="name"
+                item-value="id"
+                return-object
+                @change="onChangeEvent"
+                :success="valid"
+                :error-messages="errors"
+                label="イベント"/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="12" sm="12" md="6">
+            <ValidationProvider name="デザイン" rules="required" v-slot="{ errors, valid }">
+              <v-select
+                dense
+                clearable
+                v-model="baseDesign"
+                :items="baseDesigns"
+                item-text="name"
+                item-value="id"
+                return-object
+                @change="onChangeBaseDesign"
+                :success="valid"
+                :error-messages="errors"
+                label="デザイン"/>
+            </ValidationProvider>
+          </v-col>
+        </v-row>
+        <v-row v-if="baseDesign">
+          <v-col cols="12" xl="12">
+            <v-img v-bind:src="baseDesign.imageUrl" max-width="25%"/>
+          </v-col>
+        </v-row>
+        <v-row justify="space-between">
+          <v-col cols="12">
+            <ValidationProvider name="タイトル" rules="required|max:100" v-slot="{ errors, valid }">
+              <v-text-field
+                v-model="name"
+                :counter="100"
+                label="タイトル"
+                :success="valid"
+                :error-messages="errors"
+                required/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="12">
+            <ValidationProvider name="宛名名義" rules="required|max:100" v-slot="{ errors, valid }">
+              <v-text-field
+                v-model="presentTo"
+                :counter="100"
+                label="宛名名義"
+                suffix="様"
+                :success="valid"
+                :error-messages="errors"
+                required/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="12">
+            <ValidationProvider name="贈り主名義" rules="required|max:100" v-slot="{ errors, valid }">
+              <v-text-field
+                v-model="presentFrom"
+                :counter="100"
+                label="贈り主名義"
+                suffix="より"
+                :success="valid"
+                :error-messages="errors"
+                required/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="12">
+            <ValidationProvider name="企画者名" rules="required|max:100" v-slot="{ errors, valid }">
+              <v-text-field
+                v-model="organizerName"
+                :counter="100"
+                label="企画者名"
+                :success="valid"
+                :error-messages="errors"
+                required/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              v-model="description"
+              label="フラワースタンドの詳細説明・メッセージなど（任意）"/>
+          </v-col>
+          <v-col cols="12">
+            <ValidationProvider name="URL" rules="regex:^http[s]?://.+$" v-slot="{ errors, valid }">
+              <v-text-field
+                v-model="projectUrl"
+                :success="valid"
+                :error-messages="errors"
+                label="URL（任意）"/>
+            </ValidationProvider>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <ValidationProvider name="パネルイラスト" rules="mimes:image/jpeg,image/png|size:1024" v-slot="{ errors, valid }">
+              <v-file-input
+                v-model="panel"
+                accept=".jpg,.jpeg,.png"
+                label="パネルイラスト（任意・JPEGもしくはPNG形式・1MB以内）"
+                :success="valid"
+                :error-messages="errors"
+                prepend-icon="mdi-image"/>
+            </ValidationProvider>
+          </v-col>
+        </v-row>
+        <v-row v-if="preview">
+          <v-col cols="12">
+            <v-img v-bind:src="imageUrl" max-width="50%"/>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-btn
+              color="success"
+              class="ma-4"
+              :disabled="invalid"
+              @click="onPreview">
+              プレビュー
+            </v-btn>
+            <v-btn
+              color="primary"
+              class="ma-4"
+              :disabled="invalid"
+              @click="onSubmit">
+              作成
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-overlay :value="progress">
+              <v-progress-circular
+                :size="70"
+                :width="7"
+                color="#e4007f"
+                indeterminate/>
+            </v-overlay>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-form>
+  </ValidationObserver>
 </template>
 
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse } from 'axios';
-import { ValidationProvider, extend } from 'vee-validate';
-import { required, max, mimes, size } from 'vee-validate/dist/rules';
+import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
+import { required, max, mimes, size, regex } from 'vee-validate/dist/rules';
 import { FlowerStandPreviewRequest, FlowerStandPreviewResponse } from '../models/FlowerStand';
 import { Event } from '../models/Event';
 import { Group } from '../models/Group';
@@ -176,10 +186,12 @@ extend('required', required);
 extend('max', max);
 extend('mimes', mimes);
 extend('size', size);
+extend('regex', regex);
 
 @Component({
   components: {
-    ValidationProvider
+    ValidationProvider,
+    ValidationObserver
   }
 })
 export default class FlowerStandCreateForm extends Vue {
