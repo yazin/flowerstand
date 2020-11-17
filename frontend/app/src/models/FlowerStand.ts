@@ -17,6 +17,14 @@ export interface FlowerStand {
   baseDesign: BaseDesign;
 }
 
+export interface FlowerStandSearchRequestQuery {
+  baseDesignId?: number;
+  eventId?: number;
+  groupId?: number;
+  offset?: number;
+  limit?: number;
+}
+
 export interface FlowerStandVerifyAdminKeyRequestBody {
   flowerStandId: number;
   adminKey: string;
