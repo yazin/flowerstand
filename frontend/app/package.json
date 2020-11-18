@@ -23,7 +23,7 @@
     "vue-infinite-loading": "^2.4.5",
     "vue-property-decorator": "^9.0.2",
     "vue-router": "^3.4.9",
-    "vuetify": "^2.3.17"
+    "vuetify": "^2.3.18"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
