@@ -32,7 +32,10 @@ export interface IFlowerStandGetRequestParams {
 
 export interface IFlowerStandSearchRequestQuery {
   eventId?: number,
-  baseDesignId?: number
+  baseDesignId?: number,
+  groupId?: number,
+  offset?: number,
+  limit?: number
 }
 
 export interface IFlowerStandVerifyAdminKeyRequestBody {

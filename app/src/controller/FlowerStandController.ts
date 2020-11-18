@@ -47,19 +47,32 @@ export class FlowerStandController {
 
   @Get('')
   private async search(req: Request<void, IFlowerStand[], void, IFlowerStandSearchRequestQuery>, res: Response<IFlowerStand[]>): Promise<Response<IFlowerStand[]>> {
-    Logger.Info(req.params, true);
+    Logger.Info(req.query, true);
 
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
-      let where = {};
-      if (req.query.baseDesignId && req.query.eventId) {
-        where = {baseDesignId: req.query.baseDesignId, eventId: req.query.eventId};
-      } else if (req.query.baseDesignId) {
-        where = {baseDesignId: req.query.baseDesignId};
-      } else if (req.query.eventId) {
-        where = {eventId: req.query.eventId};
+      const whereRaw: string[] = [];  // happy hackin'
+
+      // TODO: validate query.
+
+      if (req.query.baseDesignId) {
+        whereRaw.push(`FlowerStand__baseDesign.id = ${req.query.baseDesignId}`);
       }
-      const flowerStands: FlowerStand[] = await repo.find({where: where, relations: ['participants', 'event', 'event.groups', 'baseDesign', 'baseDesign.group']});
+
+      if (req.query.eventId) {
+        whereRaw.push(`FlowerStand__event.id = ${req.query.eventId}`);
+      }
+
+      if (req.query.groupId) {
+        whereRaw.push(`FlowerStand__baseDesign__group.id = ${req.query.groupId}`);
+      }
+
+      let flowerStands: FlowerStand[] = await repo.find({
+        where: whereRaw.join(' and '),
+        relations: ['participants', 'event', 'event.groups', 'baseDesign', 'baseDesign.group'],
+        skip: req.query.offset,
+        take: req.query.limit});
+
       const ret: IFlowerStand[] = flowerStands.map((flowerStand: FlowerStand): IFlowerStand => {
         return this.toInterface(flowerStand);
       }, this);

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <v-row>
       <v-col>
         <FlowerStandFilterForm
@@ -13,6 +13,7 @@
       <v-col v-for="item in flowerStands" :key="item.id" cols="12" sm="12" md="6" lg="3">
         <FlowerStandListItem :flowerStand="item"/>
       </v-col>
+      <InfiniteLoading ref="infiniteLoading" @infinite="onEndOfPage"/>
     </v-row>
   </v-container>
 </template>
@@ -20,48 +21,123 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { FlowerStand } from '../models/FlowerStand';
+import InfiniteLoading, { StateChanger } from 'vue-infinite-loading';
+import { FlowerStand, FlowerStandSearchRequestQuery } from '../models/FlowerStand';
 import FlowerStandListItem from './FlowerStandListItem.vue';
 import FlowerStandFilterForm, { FilterCondition } from './FlowerStandFilterForm.vue';
 
 @Component({
   components: {
     FlowerStandListItem,
-    FlowerStandFilterForm
+    FlowerStandFilterForm,
+    InfiniteLoading
   }
 })
 export default class FlowerStandList extends Vue {
   flowerStands: FlowerStand[] = [];
   errorText = '';
+  page = 0;
+  gotAllData = false;
+
+  get pageSize() {
+    return 16;
+  }
 
   private allFlowerStands: FlowerStand[] = [];
 
   async mounted() {
+    const params: FlowerStandSearchRequestQuery = {
+      offset: 0,
+      limit: this.pageSize
+    };
     try {
-      const flowerStands: AxiosResponse<FlowerStand[]> = await axios.get<FlowerStand[]>(`${process.env.VUE_APP_API_URL}/flowerstands`);
+      const flowerStands: AxiosResponse<FlowerStand[]> = await axios.get<FlowerStand[]>(`${process.env.VUE_APP_API_URL}/flowerstands`, {params: params});
       if (flowerStands.status !== 200) {
         throw new Error(`データ取得に失敗しました code:${flowerStands.status}`);
       }
-
       this.flowerStands = flowerStands.data;
-      this.allFlowerStands = flowerStands.data;
-    } catch (err) {
+    } catch (err: any) {
       const e: AxiosError<FlowerStand[]> = err;
       throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
   }
 
-  changeFilter(condition: FilterCondition) {
-    if (!condition.event && !condition.group && !condition.baseDesign) {
-      this.flowerStands = this.allFlowerStands;
-      return;
+  async changeFilter(condition: FilterCondition) {
+    let loading: InfiniteLoading | null = null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isInfiniteLoading = (x: any): x is InfiniteLoading => (x !== null && typeof x === 'object' && typeof x.distance === 'number');
+    if (isInfiniteLoading(this.$refs.infiniteLoading)) {
+      loading = this.$refs.infiniteLoading;
     }
 
-    this.flowerStands = this.allFlowerStands.filter((flowerStand: FlowerStand): flowerStand is FlowerStand => {
-      return (flowerStand.event.id === condition.event
-        && flowerStand.baseDesign.group.id === condition.group
-        && flowerStand.baseDesign.id === condition.baseDesign);
-    });
+    if (!loading) {
+      throw new Error('予期しないエラーが発生しました');
+    }
+
+    loading.stateChanger.reset();
+
+    this.page = 0;
+    const params: FlowerStandSearchRequestQuery = {
+      offset: 0,
+      limit: this.pageSize
+    };
+
+    if (condition.event) {
+      params.eventId = condition.event;
+    }
+
+
+    if (condition.baseDesign) {
+      params.baseDesignId = condition.baseDesign;
+    }
+
+    if (condition.group) {
+      params.groupId = condition.group;
+    }
+
+    try {
+      const flowerStands: AxiosResponse<FlowerStand[]> = await axios.get<FlowerStand[]>(`${process.env.VUE_APP_API_URL}/flowerstands`, {params: params});
+      if (flowerStands.status !== 200) {
+        throw new Error(`データ取得に失敗しました code:${flowerStands.status}`);
+      }
+      this.flowerStands = flowerStands.data;
+      this.gotAllData = flowerStands.data.length < this.pageSize;
+      if (this.gotAllData) { 
+        loading.stateChanger.complete();
+      } else {
+        loading.stateChanger.loaded();
+      }
+    } catch (err: any) {
+      const e: AxiosError<FlowerStand[]> = err;
+      throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+    }
+  }
+
+  async onEndOfPage($state: StateChanger) {
+    if (this.gotAllData) {
+      return;
+    }
+    this.page++;
+    const params: FlowerStandSearchRequestQuery = {
+      offset: this.page * this.pageSize,
+      limit: this.pageSize
+    };
+    try {
+      const flowerStands: AxiosResponse<FlowerStand[]> = await axios.get<FlowerStand[]>(`${process.env.VUE_APP_API_URL}/flowerstands`, {params: params});
+      if (flowerStands.status !== 200) {
+        throw new Error(`データ取得に失敗しました code:${flowerStands.status}`);
+      }
+      if (flowerStands.data.length < this.pageSize) {
+        this.gotAllData = true;
+        $state.complete();
+      }
+      this.flowerStands = this.flowerStands.concat(flowerStands.data);
+      $state.loaded();
+    } catch (err: any) {
+      const e: AxiosError<FlowerStand[]> = err;
+      throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+    }
   }
 }
 </script>
