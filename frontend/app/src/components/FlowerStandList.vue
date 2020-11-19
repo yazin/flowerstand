@@ -128,12 +128,13 @@ export default class FlowerStandList extends Vue {
       if (flowerStands.status !== 200) {
         throw new Error(`データ取得に失敗しました code:${flowerStands.status}`);
       }
+      this.flowerStands = this.flowerStands.concat(flowerStands.data);
       if (flowerStands.data.length < this.pageSize) {
         this.gotAllData = true;
         $state.complete();
+      } else {
+        $state.loaded();
       }
-      this.flowerStands = this.flowerStands.concat(flowerStands.data);
-      $state.loaded();
     } catch (err: any) {
       const e: AxiosError<FlowerStand[]> = err;
       throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
