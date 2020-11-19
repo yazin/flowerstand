@@ -53,25 +53,51 @@ export class FlowerStandController {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
       const whereRaw: string[] = [];  // happy hackin'
 
-      // TODO: validate query.
+      const isValidNumber = (x: unknown): boolean => {
+        return Number.isInteger(Number(x)) && Number(x) >= 0;
+      };
 
-      if (req.query.baseDesignId) {
+      if (req.query.baseDesignId && !isValidNumber(req.query.baseDesignId)) {
+        Logger.Err(`invalid baseDesignId ${req.query.baseDesignId}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      } else if (req.query.baseDesignId) {
         whereRaw.push(`FlowerStand__baseDesign.id = ${req.query.baseDesignId}`);
       }
 
-      if (req.query.eventId) {
+      if (req.query.eventId && !isValidNumber(req.query.eventId)) {
+        Logger.Err(`invalid eventId ${req.query.eventId}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      } else if (req.query.eventId) {
         whereRaw.push(`FlowerStand__event.id = ${req.query.eventId}`);
       }
 
-      if (req.query.groupId) {
+      if (req.query.groupId && !isValidNumber(req.query.groupId)) {
+        Logger.Err(`invalid groupId ${req.query.groupId}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      } else if (req.query.groupId) {
         whereRaw.push(`FlowerStand__baseDesign__group.id = ${req.query.groupId}`);
+      }
+
+      if (req.query.offset && !isValidNumber(req.query.offset)) {
+        Logger.Err(`invalid offset ${req.query.offset}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      }
+
+      if (req.query.limit && !isValidNumber(req.query.limit)) {
+        Logger.Err(`invalid limit ${req.query.limit}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      }
+
+      if (req.query.offset && !req.query.limit) {
+        Logger.Err('offset specified but limit not specified');
+        return res.status(StatusCodes.BAD_REQUEST).json();
       }
 
       let flowerStands: FlowerStand[] = await repo.find({
         where: whereRaw.join(' and '),
         relations: ['participants', 'event', 'event.groups', 'baseDesign', 'baseDesign.group'],
-        skip: req.query.offset,
-        take: req.query.limit});
+        skip: req.query.offset ? req.query.offset : undefined,
+        take: req.query.limit ? req.query.limit : undefined});
 
       const ret: IFlowerStand[] = flowerStands.map((flowerStand: FlowerStand): IFlowerStand => {
         return this.toInterface(flowerStand);
