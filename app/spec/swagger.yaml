@@ -7,7 +7,7 @@ info:
   license:
     name: MIT
     url: http://opensource.org/licenses/MIT
-  version: 0.0.2
+  version: 0.0.4
 servers:
 - url: http://localhost:3000/api
 paths:
@@ -29,6 +29,27 @@ paths:
         explode: true
         schema:
           type: integer
+      - name: groupId
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
       responses:
         "200":
           description: OK
@@ -38,6 +59,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FlowerStand'
+        "400":
+          description: one or more parameters are not valid.
     post:
       summary: creates a new flower stand.
       requestBody:
@@ -87,6 +110,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
+        "204":
+          description: baseDesignId or eventId does not exists.
   /flowerstands/{id}:
     get:
       summary: returns a flower stand.
@@ -503,6 +528,8 @@ components:
         presentFrom:
           type: string
         baseDesignId:
+          type: number
+        eventId:
           type: number
         panel:
           type: string
