@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "axios": "^0.21.0",
-    "core-js": "^3.7.0",
+    "core-js": "^3.8.0",
     "node-sass": "^5.0.0",
     "vee-validate": "^3.4.5",
     "vue": "^2.6.11",
