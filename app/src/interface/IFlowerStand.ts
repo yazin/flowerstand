@@ -47,6 +47,7 @@ export interface IFlowerStandPreviewRequestBody {
   presentTo: string,
   presentFrom: string,
   baseDesignId: number,
+  eventId: number,
   panel: string
 }
 

@@ -283,13 +283,14 @@ export default class FlowerStandCreateForm extends Vue {
   }
 
   private async postPreview(panel: string | ArrayBuffer | null = null) {
-    if (!this.baseDesign) {
+    if (!this.baseDesign || !this.event) {
       return;
     }
     const request: FlowerStandPreviewRequest = {
       presentTo: this.presentTo,
       presentFrom: this.presentFrom,
       baseDesignId: this.baseDesign.id,
+      eventId: this.event.id,
       panel: panel
     };
 

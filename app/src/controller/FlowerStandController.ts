@@ -23,6 +23,9 @@ import {
   IFlowerStandDeleteRequestQuery } from '../interface/IFlowerStand';
 import { IParticipant } from '../interface/IParticipant';
 import { IGroup } from '../interface/IGroup';
+import { FlowerStandImageGenerator, IPanelData } from '../lib/imageGenerator/FlowerStandImageGenerator';
+import container from '../../inversify.config';
+import Types from '../lib/Types';
 
 @Controller('api/flowerstands')
 export class FlowerStandController {
@@ -131,8 +134,6 @@ export class FlowerStandController {
 
   @Post('preview')
   private async preview(req: Request<void, IFlowerStandPreview, IFlowerStandPreviewRequestBody, void>, res: Response<IFlowerStandPreview>): Promise<Response<IFlowerStandPreview>> {
-    //Logger.Info(req.body, true);
-
     try {
       if (req.body.panel) {
         const panel: Buffer = Buffer.from(req.body.panel.replace(/^data:\w+\/\w+;base64,/, ''), 'base64');
@@ -149,10 +150,28 @@ export class FlowerStandController {
         return res.status(StatusCodes.NO_CONTENT).json();
       }
 
-      // TODO: generate preview image
+      const eventRepo: Repository<Event> = getRepository(Event);
+      const event: Event | undefined = await eventRepo.findOne(req.body.eventId);
+      if (!event) {
+        return res.status(StatusCodes.NO_CONTENT).json();
+      }
 
-      // FIXME: mock
-      return res.status(StatusCodes.OK).json({imageUrl: baseDesign.imageUrl});
+      let panel: IPanelData | null = null;
+      if (req.body.panel) {
+        const encodedData = req.body.panel;
+        const filedata = encodedData.replace(/^data:\w+\/\w+;base64,/, '');
+        const decodedData = Buffer.from(filedata, 'base64');
+        panel = {
+          data: decodedData,
+          ext: req.body.panel.slice(req.body.panel.indexOf('/') + 1, req.body.panel.indexOf(';')),
+          contentType: req.body.panel.slice(req.body.panel.indexOf(':') + 1, req.body.panel.indexOf(';'))
+        }
+      }
+
+      const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
+      const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.presentTo, req.body.presentFrom, event.name, panel, true);
+
+      return res.status(StatusCodes.OK).json({imageUrl: imageUrl});
     } catch (err: any) {
       Logger.Err(err);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
@@ -161,8 +180,6 @@ export class FlowerStandController {
 
   @Post()
   private async add(req: Request<void, IFlowerStandWithKeys, IFlowerStandAddRequestBody, void>, res: Response<IFlowerStandWithKeys>): Promise<Response<IFlowerStandWithKeys>> {
-    Logger.Info(req.body, true);
-
     try {
       let remoteIp: string = '';
       if (typeof req.headers['x-forwarded-for'] === 'string') {
@@ -187,14 +204,20 @@ export class FlowerStandController {
         return res.status(StatusCodes.NO_CONTENT).json();
       }
 
+      let panel: IPanelData | null = null;
       if (req.body.panel) {
-        const panel: Buffer = Buffer.from(req.body.panel.replace(/^data:\w+\/\w+;base64,/, ''), 'base64');
-        const ext: string = req.body.panel.slice(req.body.panel.indexOf('/') + 1, req.body.panel.indexOf(';'));
-        const contentType: string = req.body.panel.slice(req.body.panel.indexOf(':') + 1, req.body.panel.indexOf(';'));
+        const encodedData = req.body.panel;
+        const filedata = encodedData.replace(/^data:\w+\/\w+;base64,/, '');
+        const decodedData = Buffer.from(filedata, 'base64');
+        panel = {
+          data: decodedData,
+          ext: req.body.panel.slice(req.body.panel.indexOf('/') + 1, req.body.panel.indexOf(';')),
+          contentType: req.body.panel.slice(req.body.panel.indexOf(':') + 1, req.body.panel.indexOf(';'))
+        }
       }
 
-      // TODO: generate image
-      const imageUrl: string = baseDesign.imageUrl;
+      const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
+      const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.presentTo, req.body.presentFrom, event.name, panel, false);
 
       const fsRepo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand = new FlowerStand(req.body.name, req.body.presentTo, req.body.presentFrom, event, req.body.organizerName, remoteIp, this.generateAdminKey(), this.generateParticipationCode(), baseDesign, imageUrl);
