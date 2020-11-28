@@ -35,6 +35,7 @@ export interface FlowerStandPreviewRequest {
   presentFrom: string;
   baseDesignId: number;
   eventId: number;
+  prefix: string;
   panel: string | ArrayBuffer | null;
 }
 
@@ -51,6 +52,7 @@ export interface FlowerStandCreateRequest {
   organizerName: string;
   eventId: number;
   baseDesignId: number;
+  prefix: string;
   panel: string | ArrayBuffer | null;
 }
 

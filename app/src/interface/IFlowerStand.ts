@@ -1,29 +1,28 @@
 import { IEvent } from './IEvent';
 import { IParticipant } from './IParticipant';
 import { IBaseDesign } from './IBaseDesign';
-import { IGroup } from './IGroup';
 
 export interface IFlowerStand {
-  id: number,
-  name: string,
-  presentTo: string,
-  presentFrom: string,
-  event: IEvent,
-  description?: string,
-  projectUrl?: string,
-  organizerName: string,
-  participants: IParticipant[],
-  baseDesign: IBaseDesign,
-  imageUrl: string
+  id: number;
+  name: string;
+  presentTo: string;
+  presentFrom: string;
+  event: IEvent;
+  description?: string;
+  projectUrl?: string;
+  organizerName: string;
+  participants: IParticipant[];
+  baseDesign: IBaseDesign;
+  imageUrl: string;
 }
 
 export interface IFlowerStandWithKeys extends IFlowerStand {
-  adminKey: string,
-  participationCode: string
+  adminKey: string;
+  participationCode: string;
 }
 
 export interface IFlowerStandPreview {
-  imageUrl: string
+  imageUrl: string;
 }
 
 export interface IFlowerStandGetRequestParams {
@@ -31,24 +30,25 @@ export interface IFlowerStandGetRequestParams {
 }
 
 export interface IFlowerStandSearchRequestQuery {
-  eventId?: number,
-  baseDesignId?: number,
-  groupId?: number,
-  offset?: number,
-  limit?: number
+  eventId?: number;
+  baseDesignId?: number;
+  groupId?: number;
+  offset?: number;
+  limit?: number;
 }
 
 export interface IFlowerStandVerifyAdminKeyRequestBody {
-  flowerStandId: number,
-  adminKey: string
+  flowerStandId: number;
+  adminKey: string;
 }
 
 export interface IFlowerStandPreviewRequestBody {
-  presentTo: string,
-  presentFrom: string,
-  baseDesignId: number,
-  eventId: number,
-  panel: string
+  presentTo: string;
+  presentFrom: string;
+  baseDesignId: number;
+  eventId: number;
+  prefix: string;
+  panel: string;
 }
 
 export interface IFlowerStandAddRequestBody {
@@ -60,6 +60,7 @@ export interface IFlowerStandAddRequestBody {
   projectUrl?: string;
   eventId: number;
   baseDesignId: number;
+  prefix: string;
   panel: string;
 }
 

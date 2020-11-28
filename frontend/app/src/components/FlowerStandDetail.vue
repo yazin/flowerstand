@@ -7,7 +7,7 @@
         color="#e4007f"
         indeterminate/>
     </template>
-    <v-img :src="flowerStand.imageUrl"/>
+    <v-img :src="flowerStand.imageUrl" max-width="810" class="mx-auto"/>
     <v-card-title>{{flowerStand.name}}</v-card-title>
     <v-card-subtitle>for {{flowerStand.event.name}}<br/>企画：{{flowerStand.organizerName}}</v-card-subtitle>
     <v-divider class="mx-4"></v-divider>

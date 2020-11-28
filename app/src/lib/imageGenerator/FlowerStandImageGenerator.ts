@@ -21,14 +21,14 @@ export class FlowerStandImageGenerator {
     this.uploader = uploader;
   }
 
-  public async generateFlowerStandImage(baseDesignUrl: string, presentTo: string, presentFrom: string, eventName: string, panel: IPanelData | null = null, isPreview: boolean = false): Promise<string> {
+  public async generateFlowerStandImage(baseDesignUrl: string, prefix: string, presentTo: string, presentFrom: string, eventName: string, panel: IPanelData | null = null, isPreview: boolean = false): Promise<string> {
     const res: AxiosResponse<ArrayBuffer> = await axios.get<ArrayBuffer>(baseDesignUrl, {responseType: 'arraybuffer', headers: {'Content-Type': 'image/png'}});
     if (res.status !== 200) {
       throw new Error(`S3 respond ${res.status} for ${baseDesignUrl}`);
     }
 
     const fromSvg: string = this.converter.createPresentFrom(presentFrom);
-    const toSvg: string = this.converter.createPresetnTo(presentTo);
+    const toSvg: string = this.converter.createPresetnTo(presentTo, prefix);
     const eventNameSvg: string = this.converter.createEventName(eventName);
 
     const imageFile: Buffer = await this.compositeImage(Buffer.from(res.data), toSvg, fromSvg, eventNameSvg, panel);

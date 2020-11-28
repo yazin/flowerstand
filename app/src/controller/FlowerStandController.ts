@@ -169,7 +169,7 @@ export class FlowerStandController {
       }
 
       const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
-      const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.presentTo, req.body.presentFrom, event.name, panel, true);
+      const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.prefix, req.body.presentTo, req.body.presentFrom, event.name, panel, true);
 
       return res.status(StatusCodes.OK).json({imageUrl: imageUrl});
     } catch (err: any) {
@@ -217,7 +217,7 @@ export class FlowerStandController {
       }
 
       const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
-      const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.presentTo, req.body.presentFrom, event.name, panel, false);
+      const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.prefix, req.body.presentTo, req.body.presentFrom, event.name, panel, false);
 
       const fsRepo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand = new FlowerStand(req.body.name, req.body.presentTo, req.body.presentFrom, event, req.body.organizerName, remoteIp, this.generateAdminKey(), this.generateParticipationCode(), baseDesign, imageUrl);

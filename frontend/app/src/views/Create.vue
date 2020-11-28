@@ -103,6 +103,7 @@ export default class Create extends Vue {
       organizerName: data.organizerName,
       eventId: data.eventId,
       baseDesignId: data.baseDesignId,
+      prefix: data.prefix,
       panel: imageData
     }
     try {

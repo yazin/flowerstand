@@ -58,7 +58,17 @@
                 required/>
             </ValidationProvider>
           </v-col>
-          <v-col cols="12">
+          <v-col cols="4">
+            <ValidationProvider name="頭書" rules="required" v-slot="{ errors, valid }">
+              <v-select
+                v-model="prefix"
+                :items="prefixes"
+                :success="valid"
+                :error-messages="errors"
+                label="頭書"/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="8">
             <ValidationProvider name="宛名名義" rules="required|max:100" v-slot="{ errors, valid }">
               <v-text-field
                 v-model="presentTo"
@@ -123,7 +133,7 @@
         </v-row>
         <v-row v-if="preview">
           <v-col cols="12">
-            <v-img v-bind:src="imageUrl" max-width="50%"/>
+            <v-img v-bind:src="imageUrl" max-width="300" class="mx-auto"/>
           </v-col>
         </v-row>
         <v-row>
@@ -179,6 +189,7 @@ export interface FlowerStandCreateData {
   organizerName: string;
   eventId: number;
   baseDesignId: number;
+  prefix: string;
   panel: Blob | null;
 }
 
@@ -198,6 +209,7 @@ export default class FlowerStandCreateForm extends Vue {
   event: Event | null = null;
   baseDesign: BaseDesign | null = null;
   name = '';
+  prefix = '祝公演';
   presentTo = '';
   presentFrom = '';
   description = '';
@@ -205,6 +217,8 @@ export default class FlowerStandCreateForm extends Vue {
   organizerName = '';
   imageUrl = '';
   panel: Blob | null = null;
+
+  prefixes = ['祝公演', '祝', '祝ご出演'];
 
   preview = false;
   progress = false;
@@ -291,6 +305,7 @@ export default class FlowerStandCreateForm extends Vue {
       presentFrom: this.presentFrom,
       baseDesignId: this.baseDesign.id,
       eventId: this.event.id,
+      prefix: this.prefix,
       panel: panel
     };
 
@@ -320,6 +335,7 @@ export default class FlowerStandCreateForm extends Vue {
       organizerName: this.organizerName,
       eventId: this.event.id,
       baseDesignId: this.baseDesign.id,
+      prefix: this.prefix,
       panel: this.panel
     }
     return data;
