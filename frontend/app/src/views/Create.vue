@@ -8,7 +8,7 @@
         color="#e4007f"
         indeterminate/>
     </v-overlay>
-    <FlowerStandCreateForm @create="onCreate"/>
+    <FlowerStandCreateForm @create="onCreate" @progress-change="onProgressChange"/>
     <v-dialog v-model="showResult" ref="successDialog" persistent>
       <v-card>
         <v-card-title class="headline">成功</v-card-title>
@@ -79,6 +79,10 @@ export default class Create extends Vue {
   copied = false;
 
   private isVue = (x: unknown): x is Vue => x instanceof Vue;
+
+  private onProgressChange(isProgress: boolean) {
+    this.progress = isProgress;
+  }
 
   private onCreate(data: FlowerStandCreateData) {
     this.progress = true;

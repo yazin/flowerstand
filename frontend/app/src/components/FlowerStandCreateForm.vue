@@ -154,17 +154,6 @@
             </v-btn>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col>
-            <v-overlay :value="progress">
-              <v-progress-circular
-                :size="70"
-                :width="7"
-                color="#e4007f"
-                indeterminate/>
-            </v-overlay>
-          </v-col>
-        </v-row>
       </v-container>
     </v-form>
   </ValidationObserver>
@@ -221,7 +210,6 @@ export default class FlowerStandCreateForm extends Vue {
   prefixes = ['祝公演', '祝', '祝ご出演'];
 
   preview = false;
-  progress = false;
 
   events: Event[] = [];
   baseDesigns: BaseDesign[] = [];
@@ -281,7 +269,7 @@ export default class FlowerStandCreateForm extends Vue {
   }
 
   onPreview() {
-    this.progress = true;
+    this.$emit('progress-change', true);
     if (this.panel) {
       let imageData: string | ArrayBuffer | null = null;
       const reader: FileReader = new FileReader();
@@ -293,11 +281,11 @@ export default class FlowerStandCreateForm extends Vue {
     } else {
       this.postPreview();
     }
-    this.progress = false;
   }
 
   private async postPreview(panel: string | ArrayBuffer | null = null) {
     if (!this.baseDesign || !this.event) {
+      this.$emit('progress-change', false);
       return;
     }
     const request: FlowerStandPreviewRequest = {
@@ -313,11 +301,12 @@ export default class FlowerStandCreateForm extends Vue {
     console.log(res);
 
     if (res.status !== 200) {
-      this.progress = false;
+      this.$emit('progress-change', false);
       throw new Error(`プレビュー生成に失敗しました code:${res.status}`);
     }
 
     this.imageUrl = res.data.imageUrl;
+    this.$emit('progress-change', false);
     this.preview = true;
   }
 
