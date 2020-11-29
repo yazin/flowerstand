@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { injectable, inject } from 'inversify';
 import axios, { AxiosResponse } from 'axios';
 import sharp from 'sharp';
@@ -77,11 +78,30 @@ export class FlowerStandImageGenerator {
       }
     });
 
-    // TODO: composite user uploaded panel image
-    return await resultImage.composite([
-      {input: baseDesignImage, gravity: sharp.gravity.south},
-      {input: await toImage.toBuffer(), gravity: sharp.gravity.north},
-      {input: await fromImage.toBuffer(), top: 550, left: 55}
-    ]).png().toBuffer();
+    if (panel) {
+      let uploadedPanelImage: Buffer = await sharp(panel.data)
+        .resize(750)
+        .toBuffer();
+
+      const meta: sharp.Metadata = await sharp(uploadedPanelImage).metadata()
+      if (meta.height && meta.height > 563) {
+        uploadedPanelImage = await sharp(uploadedPanelImage)
+          .extract({top: 0, left: 0, width: 750, height: 563})
+          .toBuffer();
+      }
+
+      return await resultImage.composite([
+        {input: baseDesignImage, gravity: sharp.gravity.south},
+        {input: await toImage.toBuffer(), gravity: sharp.gravity.north},
+        {input: await fromImage.toBuffer(), top: 550, left: 55},
+        {input: uploadedPanelImage, top: 700, left: 30}
+      ]).png().toBuffer();
+    } else {
+      return await resultImage.composite([
+        {input: baseDesignImage, gravity: sharp.gravity.south},
+        {input: await toImage.toBuffer(), gravity: sharp.gravity.north},
+        {input: await fromImage.toBuffer(), top: 550, left: 55}
+      ]).png().toBuffer();
+    }
   }
 }

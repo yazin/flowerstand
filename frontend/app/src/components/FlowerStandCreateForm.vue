@@ -161,7 +161,7 @@
 
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, max, mimes, size, regex } from 'vee-validate/dist/rules';
 import { FlowerStandPreviewRequest, FlowerStandPreviewResponse } from '../models/FlowerStand';
@@ -283,7 +283,7 @@ export default class FlowerStandCreateForm extends Vue {
     }
   }
 
-  private async postPreview(panel: string | ArrayBuffer | null = null) {
+  private async postPreview(panel: string | ArrayBuffer | null = null): Promise<void> {
     if (!this.baseDesign || !this.event) {
       this.$emit('progress-change', false);
       return;
@@ -297,17 +297,20 @@ export default class FlowerStandCreateForm extends Vue {
       panel: panel
     };
 
-    const res: AxiosResponse<FlowerStandPreviewResponse> = await axios.post<FlowerStandPreviewResponse>(`${process.env.VUE_APP_API_URL}/flowerstands/preview`, request);
-    console.log(res);
+    try {
+      const res: AxiosResponse<FlowerStandPreviewResponse> = await axios.post<FlowerStandPreviewResponse>(`${process.env.VUE_APP_API_URL}/flowerstands/preview`, request);
+      if (res.status !== 200) {
+        this.$emit('error', `プレビュー生成に失敗しました code:${res.status}`);
+        return;
+      }
 
-    if (res.status !== 200) {
+      this.imageUrl = res.data.imageUrl;
       this.$emit('progress-change', false);
-      throw new Error(`プレビュー生成に失敗しました code:${res.status}`);
+      this.preview = true;
+    } catch (err: any) {
+      const e: AxiosError = err;
+      this.$emit('error', `プレビュー生成に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
-
-    this.imageUrl = res.data.imageUrl;
-    this.$emit('progress-change', false);
-    this.preview = true;
   }
 
   @Emit('create')

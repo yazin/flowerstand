@@ -8,7 +8,7 @@
         color="#e4007f"
         indeterminate/>
     </v-overlay>
-    <FlowerStandCreateForm @create="onCreate" @progress-change="onProgressChange"/>
+    <FlowerStandCreateForm @create="onCreate" @progress-change="onProgressChange" @error="onError"/>
     <v-dialog v-model="showResult" ref="successDialog" persistent>
       <v-card>
         <v-card-title class="headline">成功</v-card-title>
@@ -68,7 +68,7 @@ export default class Create extends Vue {
   isError = false;
   errorText = '';
   errorCaptured(err: Error): boolean {
-    console.error(err);
+    this.progress = false;
     this.errorText = err.message;
     this.isError = true;
     return false;
@@ -82,6 +82,12 @@ export default class Create extends Vue {
 
   private onProgressChange(isProgress: boolean) {
     this.progress = isProgress;
+  }
+
+  private onError(message: string) {
+    this.progress = false;
+    this.errorText = message;
+    this.isError = true;
   }
 
   private onCreate(data: FlowerStandCreateData) {
