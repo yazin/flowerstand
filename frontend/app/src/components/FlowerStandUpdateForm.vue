@@ -58,12 +58,29 @@
             </v-btn>
             <v-btn
               class="ma-4"
+              color="red"
+              dark
+              @click="confirm = true">
+              削除
+            </v-btn>
+            <v-btn
+              class="ma-4"
               @click="onCancel">
               キャンセル
             </v-btn>
           </v-col>
         </v-row>
       </v-container>
+      <v-dialog v-model="confirm" persistent>
+        <v-card>
+          <v-card-title class="headline">フラワースタンド削除</v-card-title>
+          <v-card-text>フラワースタンドを削除します。この操作は取り消せません。削除しますか？</v-card-text>
+          <v-card-actions>
+            <v-btn dark color="red" @click="onDelete">削除</v-btn>
+            <v-btn @click="confirm = false">キャンセル</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-form>
   </ValidationObserver>
 </template>
@@ -86,10 +103,16 @@ extend('regex', regex);
 })
 export default class FlowerStandUpdatePage extends Vue {
   @Prop() private flowerStand!: FlowerStand
+  confirm = false;
 
   @Emit('update')
   private onUpdate() {
     return this.flowerStand;
+  }
+
+  @Emit('delete')
+  private onDelete() {
+    return this.flowerStand.id;
   }
 
   private onCancel() {

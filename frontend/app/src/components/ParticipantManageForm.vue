@@ -31,7 +31,7 @@
         <v-card-text>選択した参加者を削除します。この操作は取り消せません。削除しますか？</v-card-text>
         <v-card-actions>
           <v-btn dark color="red" @click="onClickDelete">削除</v-btn>
-          <v-btn @click="dialog = false">キャンセル</v-btn>
+          <v-btn @click="confirm = false">キャンセル</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

@@ -1,7 +1,7 @@
 <template>
   <div class="update">
     <v-alert color="error" icon="mdi-alert-circle" dark transition="fade-transition" v-model="isError">{{errorText}}</v-alert>
-    <FlowerStandUpdateForm :flowerStand="flowerStand" @update="onUpdate"/>
+    <FlowerStandUpdateForm :flowerStand="flowerStand" @update="onUpdate" @delete="onDelete"/>
   </div>
 </template>
 
@@ -95,6 +95,22 @@ export default class Update extends Vue {
     } catch (err) {
       const e: AxiosError<void> = err;
       this.errorText = `データ更新に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
+      this.isError = true;
+    }
+  }
+
+  private async onDelete(): Promise<void> {
+    try {
+      const res: AxiosResponse<void> = await axios.delete<void>(`${process.env.VUE_APP_API_URL}/flowerstands/${this.flowerStand.id}?adminKey=${this.adminKey}`);
+      if (res.status !== 200) {
+        this.errorText = `データ更新に失敗しました code:${res.status}`;
+        this.isError = true;
+        return;
+      }
+      this.$router.push(`/`);
+    } catch (err: any) {
+      const e: AxiosError<void> = err;
+      this.errorText = `データ削除に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
       this.isError = true;
     }
   }
