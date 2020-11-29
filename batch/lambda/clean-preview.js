@@ -11,9 +11,9 @@ exports.handler = async (event) => {
     Bucket: process.env.S3_BUCKET,
     Delete: {
       Objects: previews.Contents.map((v) => {
-        return {Key: v.Key}
+          return {Key: v.Key};
         }).filter((v) => {
-          return v.Key !== 'preview/'
+          return v.Key !== 'preview/';
         }),
       Quiet: true
     }
