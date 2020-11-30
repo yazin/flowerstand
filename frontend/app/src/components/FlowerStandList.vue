@@ -10,7 +10,7 @@
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col v-for="item in flowerStands" :key="item.id" cols="12" sm="12" md="6" lg="3">
+      <v-col v-for="item in flowerStands" :key="item.id" cols="12" xs="12" sm="6" lg="3">
         <FlowerStandListItem :flowerStand="item"/>
       </v-col>
       <InfiniteLoading ref="infiniteLoading" @infinite="onEndOfPage"/>

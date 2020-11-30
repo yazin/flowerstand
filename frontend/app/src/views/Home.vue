@@ -2,6 +2,9 @@
   <div class="home">
     <v-alert color="error" icon="mdi-alert-circle" dark transition="fade-transition" v-model="isError">{{errorText}}</v-alert>
     <FlowerStandList />
+    <v-btn fab fixed bottom right color="red" dark to="/create">
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
   </div>
 </template>
 
