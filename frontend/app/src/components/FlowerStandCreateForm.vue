@@ -77,8 +77,11 @@
                 suffix="様"
                 :success="valid"
                 :error-messages="errors"
+                @change="onChangeTo"
                 required/>
             </ValidationProvider>
+            <v-alert dense text color="grey" v-model="isYoshiko">ヨハネよ</v-alert>
+            <v-alert dense text color="rgb(225, 208, 11)" v-model="isKasuKasu">かすみんです！</v-alert>
           </v-col>
           <v-col cols="12">
             <ValidationProvider name="贈り主名義" rules="required|max:100" v-slot="{ errors, valid }">
@@ -206,6 +209,8 @@ export default class FlowerStandCreateForm extends Vue {
   organizerName = '';
   imageUrl = '';
   panel: Blob | null = null;
+  isYoshiko = false;
+  isKasuKasu = false;
 
   preview = false;
 
@@ -267,6 +272,20 @@ export default class FlowerStandCreateForm extends Vue {
 
     if (this.event && this.event.groups.map((group: Group): number => group.id).indexOf(groupId) < 0) {
       this.event = null;
+    }
+  }
+
+  private onChangeTo(to: string): void {
+    if (to.indexOf('善子') >= 0) {
+      this.isYoshiko = true;
+    } else {
+      this.isYoshiko = false;
+    }
+
+    if (to.indexOf('かすかす') >= 0) {
+      this.isKasuKasu = true;
+    } else {
+      this.isKasuKasu = false;
     }
   }
 
