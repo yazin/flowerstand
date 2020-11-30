@@ -67,6 +67,7 @@ export default class Create extends Vue {
   progress = false;
   isError = false;
   errorText = '';
+
   errorCaptured(err: Error): boolean {
     this.progress = false;
     this.errorText = err.message;
@@ -80,17 +81,17 @@ export default class Create extends Vue {
 
   private isVue = (x: unknown): x is Vue => x instanceof Vue;
 
-  private onProgressChange(isProgress: boolean) {
+  private onProgressChange(isProgress: boolean): void {
     this.progress = isProgress;
   }
 
-  private onError(message: string) {
+  private onError(message: string): void {
     this.progress = false;
     this.errorText = message;
     this.isError = true;
   }
 
-  private onCreate(data: FlowerStandCreateData) {
+  private onCreate(data: FlowerStandCreateData): void {
     this.progress = true;
     if (data.panel) {
       const reader: FileReader = new FileReader();
@@ -125,7 +126,7 @@ export default class Create extends Vue {
       }
       this.newStand = res.data;
       this.showResult = true;
-    } catch (err) {
+    } catch (err: any) {
       const e: AxiosError<FlowerStandCreateResponse> = err;
       this.errorText = `フラワースタンド作成に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
       this.progress = false;

@@ -64,8 +64,8 @@
         </v-card-text>
         <v-card-text v-if="adminKeyError"><strong class="red--text text--lighten-1">管理キーが無効です</strong></v-card-text>
         <v-card-actions>
-          <v-btn dark color="primary" @click="verifyAdminKey">確認</v-btn>
-          <v-btn @click="cancelVerify">キャンセル</v-btn>
+          <v-btn dark color="primary" @click="onClickVerifyAdminKey">確認</v-btn>
+          <v-btn @click="onClickCancelVerify">キャンセル</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -86,7 +86,7 @@ export default class FlowerStandDetail extends Vue {
   adminKeyError = false;
   nextPath = '';
 
-  mounted() {
+  mounted(): void {
     this.loading = false;
   }
 
@@ -104,7 +104,7 @@ export default class FlowerStandDetail extends Vue {
     return `https://${parts[2]}/@${parts[1]}`;
   }
 
-  private onClickParticipate() {
+  private onClickParticipate(): void {
     if (!this.flowerStand.id) {
       this.$router.push('/error');
       return;
@@ -112,21 +112,21 @@ export default class FlowerStandDetail extends Vue {
     this.$router.push(`/participate/${this.flowerStand.id}`);
   }
 
-  private onClickUpdate() {
+  private onClickUpdate(): void {
     this.nextPath = `/update/${this.flowerStand.id}`;
     this.adminKeyError = false;
     this.adminKey = '';
     this.checkAdminKey = true;
   }
 
-  private onClickParticipantManage() {
+  private onClickParticipantManage(): void {
     this.nextPath = `/participantmanage/${this.flowerStand.id}`;
     this.adminKeyError = false;
     this.adminKey = '';
     this.checkAdminKey = true;
   }
 
-  private async verifyAdminKey(): Promise<void> {
+  private async onClickVerifyAdminKey(): Promise<void> {
     if (!this.flowerStand.id) {
       this.$router.push('/error');
       return;
@@ -145,7 +145,7 @@ export default class FlowerStandDetail extends Vue {
         this.loading = false;
         this.$router.push(`${this.nextPath}?adminKey=${this.adminKey}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       this.adminKeyError = true;
       this.loading = false;
     }
@@ -154,7 +154,7 @@ export default class FlowerStandDetail extends Vue {
     this.loading = false;
   }
 
-  private cancelVerify() {
+  private onClickCancelVerify() {
     this.adminKey = '';
     this.adminKeyError = false;
     this.checkAdminKey = false;

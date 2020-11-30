@@ -78,7 +78,7 @@ export default class FlowerStandFilterForm extends Vue {
   private allGroups: Group[] = [];
   private allBaseDesigns: BaseDesign[] = [];
 
-  async mounted() {
+  async mounted(): Promise<void> {
     try {
       const events: AxiosResponse<Event[]> = await axios.get<Event[]>(`${process.env.VUE_APP_API_URL}/events`);
       if (events.status === 200) {
@@ -103,14 +103,14 @@ export default class FlowerStandFilterForm extends Vue {
       } else {
         throw new Error(`データ取得に失敗しました code:${events.status}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       const e: AxiosError = err;
       throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
   }
 
   @Emit('change-event')
-  onChangeEvent(): FilterCondition {
+  private onChangeEvent(): FilterCondition {
     if (!this.event) {
       this.groups = this.allGroups;
       this.baseDesigns = this.allBaseDesigns;
@@ -145,7 +145,7 @@ export default class FlowerStandFilterForm extends Vue {
   }
 
   @Emit('change-group')
-  onChangeGroup(): FilterCondition {
+  private onChangeGroup(): FilterCondition {
     if (!this.group) {
       this.events = this.allEvents;
       this.baseDesigns = this.allBaseDesigns;
@@ -179,7 +179,7 @@ export default class FlowerStandFilterForm extends Vue {
   }
 
   @Emit('change-design')
-  onChangeBaseDesign(): FilterCondition {
+  private onChangeBaseDesign(): FilterCondition {
     if (!this.baseDesign) {
       this.events = this.allEvents;
       this.groups = this.allGroups;

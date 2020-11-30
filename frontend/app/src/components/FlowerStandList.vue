@@ -39,13 +39,13 @@ export default class FlowerStandList extends Vue {
   page = 0;
   gotAllData = false;
 
-  get pageSize() {
+  get pageSize(): number {
     return 16;
   }
 
   private allFlowerStands: FlowerStand[] = [];
 
-  async mounted() {
+  async mounted(): Promise<void> {
     const params: FlowerStandSearchRequestQuery = {
       offset: 0,
       limit: this.pageSize
@@ -62,7 +62,7 @@ export default class FlowerStandList extends Vue {
     }
   }
 
-  async changeFilter(condition: FilterCondition) {
+  private async changeFilter(condition: FilterCondition): Promise<void> {
     let loading: InfiniteLoading | null = null;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -114,7 +114,7 @@ export default class FlowerStandList extends Vue {
     }
   }
 
-  async onEndOfPage($state: StateChanger) {
+  private async onEndOfPage($state: StateChanger): Promise<void> {
     if (this.gotAllData) {
       return;
     }

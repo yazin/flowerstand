@@ -142,14 +142,14 @@
               color="success"
               class="ma-4"
               :disabled="invalid"
-              @click="onPreview">
+              @click="onClickPreview">
               プレビュー
             </v-btn>
             <v-btn
               color="primary"
               class="ma-4"
               :disabled="invalid"
-              @click="onSubmit">
+              @click="onClickSubmit">
               作成
             </v-btn>
           </v-col>
@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, max, mimes, size, regex } from 'vee-validate/dist/rules';
@@ -207,8 +207,6 @@ export default class FlowerStandCreateForm extends Vue {
   imageUrl = '';
   panel: Blob | null = null;
 
-  prefixes = ['祝公演', '祝', '祝ご出演'];
-
   preview = false;
 
   events: Event[] = [];
@@ -217,7 +215,11 @@ export default class FlowerStandCreateForm extends Vue {
   private allEvents: Event[] = [];
   private allBaseDesigns: BaseDesign[] = [];
 
-  async mounted() {
+  get prefixes(): Array<string> {
+    return ['祝公演', '祝', '祝ご出演'];
+  }
+
+  async mounted(): Promise<void> {
     const events: AxiosResponse<Event[]> = await axios.get<Event[]>(`${process.env.VUE_APP_API_URL}/events`);
     if (events.status === 200) {
       this.events = events.data;
@@ -235,7 +237,7 @@ export default class FlowerStandCreateForm extends Vue {
     }
   }
 
-  onChangeEvent() {
+  private onChangeEvent(): void {
     if (!this.event) {
       this.baseDesigns = this.allBaseDesigns;
       return;
@@ -252,7 +254,7 @@ export default class FlowerStandCreateForm extends Vue {
     }
   }
 
-  onChangeBaseDesign() {
+  private onChangeBaseDesign(): void {
     if (!this.baseDesign) {
       this.events = this.allEvents;
       return;
@@ -268,7 +270,7 @@ export default class FlowerStandCreateForm extends Vue {
     }
   }
 
-  onPreview() {
+  private onClickPreview(): void {
     this.$emit('progress-change', true);
     if (this.panel) {
       let imageData: string | ArrayBuffer | null = null;
@@ -313,8 +315,7 @@ export default class FlowerStandCreateForm extends Vue {
     }
   }
 
-  @Emit('create')
-  onSubmit() {
+  private onClickSubmit(): void {
     if (!this.event || !this.baseDesign) {
       return;
     }
@@ -330,7 +331,7 @@ export default class FlowerStandCreateForm extends Vue {
       prefix: this.prefix,
       panel: this.panel
     }
-    return data;
+    this.$emit('create', data);
   }
 }
 </script>

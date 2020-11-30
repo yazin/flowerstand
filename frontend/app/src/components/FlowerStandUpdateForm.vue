@@ -106,16 +106,16 @@ export default class FlowerStandUpdatePage extends Vue {
   confirm = false;
 
   @Emit('update')
-  private onUpdate() {
+  private onUpdate(): FlowerStand {
     return this.flowerStand;
   }
 
   @Emit('delete')
-  private onDelete() {
-    return this.flowerStand.id;
+  private onDelete(): void {
+    return;
   }
 
-  private onCancel() {
+  private onCancel(): void {
     this.$router.push(`/detail/${this.flowerStand.id}`);
   }
 }

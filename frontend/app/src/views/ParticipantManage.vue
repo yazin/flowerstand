@@ -62,7 +62,7 @@ export default class ParticipantManage extends Vue {
     return false;
   }
 
-  created() {
+  created(): void {
     if (!this.$route.query.adminKey || typeof this.$route.query.adminKey !== 'string' || this.$route.query.adminKey.length === 0) {
       this.$router.push('/error');
     }else {
@@ -70,7 +70,7 @@ export default class ParticipantManage extends Vue {
     }
   }
 
-  async mounted() {
+  async mounted(): Promise<void> {
     try {
       const res: AxiosResponse<FlowerStand> = await axios.get<FlowerStand>(`${process.env.VUE_APP_API_URL}/flowerstands/${this.$route.params.id}`);
       if (res.status !== 200) {
@@ -79,7 +79,7 @@ export default class ParticipantManage extends Vue {
       }
       this.flowerStand = res.data;
       this.progress = false;
-    } catch (err) {
+    } catch (err: any) {
       this.progress = false;
       const e: AxiosError<FlowerStand> = err;
       this.errorText = `データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
@@ -87,7 +87,7 @@ export default class ParticipantManage extends Vue {
     }
   }
 
-  async deleteParticipants(participantIds: number[]) {
+  async deleteParticipants(participantIds: number[]): Promise<void> {
     this.progress = true;
     try {
       for (const id of participantIds) {
@@ -99,7 +99,7 @@ export default class ParticipantManage extends Vue {
           return;
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       this.progress = false;
       const e: AxiosError<void> = err;
       this.errorText = `参加者の削除に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
@@ -116,7 +116,7 @@ export default class ParticipantManage extends Vue {
         return;
       }
       this.flowerStand.participants = res.data;
-    } catch (err) {
+    } catch (err: any) {
       const e: AxiosError<Participant[]> = err;
       this.progress = false;
       this.errorText = `参加者情報の取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`;

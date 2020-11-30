@@ -52,12 +52,12 @@ export default class ParticipantManageForm extends Vue {
 
   success = false;
 
-  mounted() {
+  mounted(): void {
     this.loading = false;
   }
 
   @Emit('delete')
-  onClickDelete(): number[] {
+  private onClickDelete(): number[] {
     this.confirm = false;
     return this.selected;
   }

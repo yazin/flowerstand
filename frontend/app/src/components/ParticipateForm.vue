@@ -89,7 +89,7 @@
             </v-btn>
             <v-btn
               class="ma^4"
-              @click="onCancel">
+              @click="onClickCancel">
               キャンセル
             </v-btn>
           </v-col>
@@ -136,12 +136,12 @@ export default class ParticipateForm extends Vue {
   }
 
   @Emit('participate')
-  onClickParticipate(): ParticipantData {
+  private onClickParticipate(): ParticipantData {
     return this.participant;
   }
 
   @Emit('cancel')
-  onCancel(): void {
+  private onClickCancel(): void {
     return;
   }
 }

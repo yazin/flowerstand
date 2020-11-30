@@ -44,6 +44,7 @@ export default class Detail extends Vue {
   };
   isError = false;
   errorText = '';
+
   errorCaptured(err: Error): boolean {
     console.error(err.message);
     this.errorText = err.message;
@@ -51,7 +52,7 @@ export default class Detail extends Vue {
     return false;
   }
 
-  async mounted() {
+  async mounted(): Promise<void> {
     try {
       const res: AxiosResponse<FlowerStand> = await axios.get<FlowerStand>(`${process.env.VUE_APP_API_URL}/flowerstands/${this.$route.params.id}`);
       if (res.status !== 200) {
@@ -60,7 +61,7 @@ export default class Detail extends Vue {
         return;
       }
       this.flowerStand = res.data;
-    } catch (err) {
+    } catch (err: any) {
       const e: AxiosError<FlowerStand> = err;
       this.errorText = `データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
       this.isError = true;
