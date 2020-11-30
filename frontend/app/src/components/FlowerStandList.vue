@@ -70,7 +70,7 @@ export default class FlowerStandList extends Vue {
         throw new Error('予期しないエラーが発生しました');
       }
 
-      if (flowerStands.data.length <= this.pageSize) {
+      if (flowerStands.data.length < this.pageSize) {
         loading.stateChanger.loaded();
       } else {
         loading.stateChanger.complete();
