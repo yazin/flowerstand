@@ -1,5 +1,7 @@
 # Virtual Flower Stand
 
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K72GPJM)
+
 ## Development setup (Docker)
 
 ### Requirements
@@ -14,11 +16,11 @@ Rename `mysql/mysql.env.example` to `mysql.env` and specify parameters. You may 
 
 Rename `app/app.env.example` to `app.env` and specify parameters. Database related parameters have to match with `mysql.env` created above.
 
-Specify `NODE_ENV=development` for development environnment.
+Specify `NODE_ENV=development` for development environment.
 
 ### Front-end
 
-Nothing to do for development.
+Rename `frontend/app/app.env.example` to `.env.development` and specify API URL. No trailing slash.
 
 ### Install packages and initialize Database
 
@@ -56,6 +58,14 @@ That's all. Access `http://localhost:8080` for test.
 
 Front-end may not working correctly on some old browsers. I have no plan to support them. For Windows user, let's uninstall IE11 and upgrade Edge to Chromium edition for better world.
 
-## API
+### Image Processing
+
+- [Sharp](https://sharp.pixelplumbing.com/)
+
+## API Spec
 
 [available on SwaggerHub](https://app.swaggerhub.com/apis/yazin/flowerstand/)
+
+## Batch
+
+Use `batch/lambda/clean-preview.js` to cleanup preview images. This code is for AWS Lambda with Node12. Policy `AmazonS3FullAccess` and environment variable `S3_BUCKET` is required.
