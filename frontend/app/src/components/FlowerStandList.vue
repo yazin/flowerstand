@@ -13,7 +13,10 @@
       <v-col v-for="item in flowerStands" :key="item.id" cols="12" xs="12" sm="6" lg="3">
         <FlowerStandListItem :flowerStand="item"/>
       </v-col>
-      <InfiniteLoading ref="infiniteLoading" @infinite="onEndOfPage"/>
+      <InfiniteLoading ref="infiniteLoading" @infinite="onEndOfPage">
+        <span slot="no-more">結果は以上です</span>
+        <span slot="no-results">フラワースタンドがありません</span>
+      </InfiniteLoading>
     </v-row>
   </v-container>
 </template>
@@ -37,7 +40,6 @@ export default class FlowerStandList extends Vue {
   flowerStands: FlowerStand[] = [];
   errorText = '';
   page = 0;
-  gotAllData = false;
 
   get pageSize(): number {
     return 16;
@@ -56,6 +58,23 @@ export default class FlowerStandList extends Vue {
         throw new Error(`データ取得に失敗しました code:${flowerStands.status}`);
       }
       this.flowerStands = flowerStands.data;
+
+      let loading: InfiniteLoading | null = null;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const isInfiniteLoading = (x: any): x is InfiniteLoading => (x !== null && typeof x === 'object' && typeof x.distance === 'number');
+      if (isInfiniteLoading(this.$refs.infiniteLoading)) {
+        loading = this.$refs.infiniteLoading;
+      }
+
+      if (!loading) {
+        throw new Error('予期しないエラーが発生しました');
+      }
+
+      if (flowerStands.data.length <= this.pageSize) {
+        loading.stateChanger.loaded();
+      } else {
+        loading.stateChanger.complete();
+      }
     } catch (err: any) {
       const e: AxiosError<FlowerStand[]> = err;
       throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
@@ -102,8 +121,7 @@ export default class FlowerStandList extends Vue {
         throw new Error(`データ取得に失敗しました code:${flowerStands.status}`);
       }
       this.flowerStands = flowerStands.data;
-      this.gotAllData = flowerStands.data.length < this.pageSize;
-      if (this.gotAllData) { 
+      if (flowerStands.data.length < this.pageSize) {
         loading.stateChanger.complete();
       } else {
         loading.stateChanger.loaded();
@@ -115,9 +133,6 @@ export default class FlowerStandList extends Vue {
   }
 
   private async onEndOfPage($state: StateChanger): Promise<void> {
-    if (this.gotAllData) {
-      return;
-    }
     this.page++;
     const params: FlowerStandSearchRequestQuery = {
       offset: this.page * this.pageSize,
@@ -130,7 +145,6 @@ export default class FlowerStandList extends Vue {
       }
       this.flowerStands = this.flowerStands.concat(flowerStands.data);
       if (flowerStands.data.length < this.pageSize) {
-        this.gotAllData = true;
         $state.complete();
       } else {
         $state.loaded();
