@@ -71,9 +71,9 @@ export default class FlowerStandList extends Vue {
       }
 
       if (flowerStands.data.length < this.pageSize) {
-        loading.stateChanger.loaded();
-      } else {
         loading.stateChanger.complete();
+      } else {
+        loading.stateChanger.loaded();
       }
     } catch (err: any) {
       const e: AxiosError<FlowerStand[]> = err;
