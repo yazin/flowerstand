@@ -69,10 +69,10 @@
             </ValidationProvider>
           </v-col>
           <v-col cols="8">
-            <ValidationProvider name="宛名名義" rules="required|max:100" v-slot="{ errors, valid }">
+            <ValidationProvider name="宛名名義" rules="required|max:20" v-slot="{ errors, valid }">
               <v-text-field
                 v-model="presentTo"
-                :counter="100"
+                :counter="20"
                 label="宛名名義"
                 suffix="様"
                 :success="valid"
@@ -84,10 +84,10 @@
             <v-alert dense text color="rgb(225, 208, 11)" v-model="isKasuKasu">かすみんです！</v-alert>
           </v-col>
           <v-col cols="12">
-            <ValidationProvider name="贈り主名義" rules="required|max:100" v-slot="{ errors, valid }">
+            <ValidationProvider name="贈り主名義" rules="required|max:20" v-slot="{ errors, valid }">
               <v-text-field
                 v-model="presentFrom"
-                :counter="100"
+                :counter="20"
                 label="贈り主名義"
                 suffix="より"
                 :success="valid"
@@ -107,14 +107,22 @@
             </ValidationProvider>
           </v-col>
           <v-col cols="12">
-            <v-textarea
-              v-model="description"
-              label="フラワースタンドの詳細説明・メッセージなど（任意）"/>
+            <ValidationProvider name="description" rules="max:1000" v-slot="{ errors, valid }">
+              <v-textarea
+                v-model="description"
+                :counter="1000"
+                label="詳細説明・メッセージなど（任意）"
+                :success="valid"
+                :error-messages="errors"
+                hint="改行は反映されません"
+                persistent-hint/>
+            </ValidationProvider>
           </v-col>
           <v-col cols="12">
-            <ValidationProvider name="URL" rules="regex:^http[s]?://.+$" v-slot="{ errors, valid }">
+            <ValidationProvider name="URL" rules="regex:^http[s]?://.+$|max:2048" v-slot="{ errors, valid }">
               <v-text-field
                 v-model="projectUrl"
+                :counter="2048"
                 :success="valid"
                 :error-messages="errors"
                 label="URL（任意）"/>
@@ -127,9 +135,11 @@
               <v-file-input
                 v-model="panel"
                 accept=".jpg,.jpeg,.png"
-                label="パネルイラスト（任意・JPEGもしくはPNG形式・1MB以内）"
+                label="パネルイラスト（任意）"
                 :success="valid"
                 :error-messages="errors"
+                hint="JPEGもしくはPNG形式・1MB以内・アスペクト比4:3推奨"
+                persistent-hint
                 prepend-icon="mdi-image"/>
             </ValidationProvider>
           </v-col>

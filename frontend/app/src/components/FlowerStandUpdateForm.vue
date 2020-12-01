@@ -31,9 +31,16 @@
             </ValidationProvider>
           </v-col>
           <v-col cols="12">
-            <v-textarea
-              v-model="flowerStand.description"
-              label="フラワースタンドの詳細説明・メッセージなど（任意）"/>
+            <ValidationProvider name="description" rules="max:1000" v-slot="{ errors, valid }">
+              <v-textarea
+                v-model="flowerStand.description"
+                :counter="1000"
+                label="詳細説明・メッセージなど（任意）"
+                :success="valid"
+                :error-messages="errors"
+                hint="改行は反映されません"
+                persistent-hint/>
+            </ValidationProvider>
           </v-col>
           <v-col cols="12">
             <ValidationProvider name="URL" rules="regex:^http[s]?://.+$" v-slot="{ errors, valid }">
