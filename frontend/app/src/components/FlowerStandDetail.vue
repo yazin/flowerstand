@@ -16,20 +16,43 @@
       <a v-if="flowerStand.projectUrl" :href="flowerStand.projectUrl" target="_blank" rel="noopner">{{flowerStand.projectUrl}}</a>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" class="mr-2" @click="onClickParticipate"><v-icon>mdi-account-plus</v-icon>参加</v-btn>
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn color="success" class="ml-2" v-bind="attrs" v-on="on"><v-icon>mdi-cog</v-icon>管理</v-btn>
-        </template>
-        <v-list>
-          <v-list-item @click="onClickUpdate">
-            <v-list-item-title>情報変更</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="onClickParticipantManage">
-            <v-list-item-title>参加者管理</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-btn color="primary" class="mr-2" @click="onClickParticipate"><v-icon>mdi-account-plus</v-icon>参加</v-btn>
+            <v-menu offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="success" class="ml-2" v-bind="attrs" v-on="on"><v-icon>mdi-cog</v-icon>管理</v-btn>
+              </template>
+              <v-list>
+                <v-list-item @click="onClickUpdate">
+                  <v-list-item-title>情報変更</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="onClickParticipantManage">
+                  <v-list-item-title>参加者管理</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-col>
+        </v-row>
+        <v-divider class="mx-4"></v-divider>
+        <v-subheader>Share by</v-subheader>
+        <v-row>
+          <v-col cols="12">
+            <ShareNetwork
+              v-for="network in networks"
+              :key="network.network"
+              :title="flowerStand.name"
+              :network="network.network"
+              :url="`${rootUrl}/detail/${flowerStand.id}`"
+            >
+              <v-btn small dark :color="network.color" class="mr-2">
+                <v-icon class="mr-1">{{network.icon}}</v-icon>{{network.name}}
+              </v-btn>
+            </ShareNetwork>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-card-actions>
     <v-divider class="mx-4"></v-divider>
     <v-subheader>参加者</v-subheader>
@@ -85,6 +108,19 @@ export default class FlowerStandDetail extends Vue {
   checkAdminKey = false;
   adminKeyError = false;
   nextPath = '';
+
+  get rootUrl(): string {
+    return process.env.VUE_APP_ROOT_URL;
+  }
+
+  get networks() {
+    return [
+      { network: 'email', name: 'Email', icon: 'mdi-email', color: '#333333'},
+      { network: 'twitter', name: 'Twitter', icon: 'mdi-twitter', color: '#1da1f2' },
+      { network: 'facebook', name: 'Facebook', icon: 'mdi-facebook', color: '#1877f2' },
+      { network: 'line', name: 'Line', icon: 'fab fah fa-line', color: '#00c300'}
+    ];
+  }
 
   mounted(): void {
     this.loading = false;
@@ -161,3 +197,9 @@ export default class FlowerStandDetail extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+a {
+  text-decoration: none;
+}
+</style>

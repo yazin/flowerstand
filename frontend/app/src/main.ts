@@ -5,6 +5,9 @@ import vuetify from './plugins/vuetify';
 import { localize } from 'vee-validate';
 import ja from 'vee-validate/dist/locale/ja.json';
 import VueClipboard from 'vue-clipboard2';
+import VueSocialSharing from 'vue-social-sharing';
+
+Vue.use(VueSocialSharing);
 
 Vue.config.productionTip = false;
 
