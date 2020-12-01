@@ -46,7 +46,7 @@
               :network="network.network"
               :url="`${rootUrl}/detail/${flowerStand.id}`"
             >
-              <v-btn small dark :color="network.color" class="mr-2">
+              <v-btn small dark :color="network.color" class="mr-2 mb-2">
                 <v-icon class="mr-1">{{network.icon}}</v-icon>{{network.name}}
               </v-btn>
             </ShareNetwork>
