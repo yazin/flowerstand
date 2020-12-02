@@ -9,9 +9,9 @@ import { Event } from '../entity/Event';
 import { Group } from '../entity/Group';
 import { Participant } from '../entity/Participant';
 import { 
-  IFlowerStand,
-  IFlowerStandWithKeys,
-  IFlowerStandPreview,
+  FlowerStandResponse,
+  FlowerStandResponseWithKeys,
+  FlowerStandPreviewResponse,
   IFlowerStandGetRequestParams,
   IFlowerStandSearchRequestQuery,
   IFlowerStandVerifyAdminKeyRequestBody,
@@ -26,11 +26,12 @@ import { IGroup } from '../interface/IGroup';
 import { FlowerStandImageGenerator, IPanelData } from '../lib/imageGenerator/FlowerStandImageGenerator';
 import container from '../../inversify.config';
 import Types from '../lib/Types';
+import { SensitiveImageError } from '../lib/Errors';
 
 @Controller('api/flowerstands')
 export class FlowerStandController {
   @Get(':id')
-  private async get(req: Request<IFlowerStandGetRequestParams, IFlowerStand, void, void>, res: Response<IFlowerStand>): Promise<Response<IFlowerStand>> {
+  private async get(req: Request<IFlowerStandGetRequestParams, FlowerStandResponse, void, void>, res: Response<FlowerStandResponse>): Promise<Response<FlowerStandResponse>> {
     Logger.Info(req.params, true);
 
     try {
@@ -40,7 +41,7 @@ export class FlowerStandController {
         return res.status(StatusCodes.NO_CONTENT).json();
       }
 
-      const ret: IFlowerStand = this.toInterface(flowerStand);
+      const ret: FlowerStandResponse = this.toResponse(flowerStand);
       return res.status(StatusCodes.OK).json(ret);
     } catch (err: any) {
       Logger.Err(err);
@@ -49,7 +50,7 @@ export class FlowerStandController {
   }
 
   @Get('')
-  private async search(req: Request<void, IFlowerStand[], void, IFlowerStandSearchRequestQuery>, res: Response<IFlowerStand[]>): Promise<Response<IFlowerStand[]>> {
+  private async search(req: Request<void, FlowerStandResponse[], void, IFlowerStandSearchRequestQuery>, res: Response<FlowerStandResponse[]>): Promise<Response<FlowerStandResponse[]>> {
     Logger.Info(req.query, true);
 
     try {
@@ -102,8 +103,8 @@ export class FlowerStandController {
         skip: req.query.offset ? req.query.offset : undefined,
         take: req.query.limit ? req.query.limit : undefined});
 
-      const ret: IFlowerStand[] = flowerStands.map((flowerStand: FlowerStand): IFlowerStand => {
-        return this.toInterface(flowerStand);
+      const ret: FlowerStandResponse[] = flowerStands.map((flowerStand: FlowerStand): FlowerStandResponse => {
+        return this.toResponse(flowerStand);
       }, this);
       return res.status(StatusCodes.OK).json(ret);
     } catch (err: any) {
@@ -133,17 +134,8 @@ export class FlowerStandController {
   }
 
   @Post('preview')
-  private async preview(req: Request<void, IFlowerStandPreview, IFlowerStandPreviewRequestBody, void>, res: Response<IFlowerStandPreview>): Promise<Response<IFlowerStandPreview>> {
+  private async preview(req: Request<void, FlowerStandPreviewResponse, IFlowerStandPreviewRequestBody, void>, res: Response<FlowerStandPreviewResponse>): Promise<Response<FlowerStandPreviewResponse>> {
     try {
-      if (req.body.panel) {
-        const panel: Buffer = Buffer.from(req.body.panel.replace(/^data:\w+\/\w+;base64,/, ''), 'base64');
-        const ext: string = req.body.panel.slice(req.body.panel.indexOf('/') + 1, req.body.panel.indexOf(';'));
-        const contentType: string = req.body.panel.slice(req.body.panel.indexOf(':') + 1, req.body.panel.indexOf(';'));
-  
-        Logger.Info(ext);
-        Logger.Info(contentType);
-      }
-
       const repo: Repository<BaseDesign> = getRepository(BaseDesign);
       const baseDesign = await repo.findOne(req.body.baseDesignId);
       if (!baseDesign) {
@@ -168,10 +160,19 @@ export class FlowerStandController {
         }
       }
 
-      const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
-      const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.prefix, req.body.presentTo, req.body.presentFrom, event.name, panel, true);
+      try {
+        const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
+        const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.prefix, req.body.presentTo, req.body.presentFrom, event.name, panel, true);
 
-      return res.status(StatusCodes.OK).json({imageUrl: imageUrl});
+        return res.status(StatusCodes.OK).json({imageUrl: imageUrl, isError: 0});
+      } catch (err: any) {
+        if (err instanceof SensitiveImageError) {
+          Logger.Err('sensitive image detected');
+          return res.status(StatusCodes.BAD_REQUEST).json({errorType: 'SENSITIVE_IMAGE', isError: 1});
+        } else {
+          throw err;
+        }
+      }
     } catch (err: any) {
       Logger.Err(err);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
@@ -179,7 +180,7 @@ export class FlowerStandController {
   }
 
   @Post()
-  private async add(req: Request<void, IFlowerStandWithKeys, IFlowerStandAddRequestBody, void>, res: Response<IFlowerStandWithKeys>): Promise<Response<IFlowerStandWithKeys>> {
+  private async add(req: Request<void, FlowerStandResponseWithKeys, IFlowerStandAddRequestBody, void>, res: Response<FlowerStandResponseWithKeys>): Promise<Response<FlowerStandResponseWithKeys>> {
     try {
       let remoteIp: string = '';
       if (typeof req.headers['x-forwarded-for'] === 'string') {
@@ -217,8 +218,18 @@ export class FlowerStandController {
       }
 
       const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
-      const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.prefix, req.body.presentTo, req.body.presentFrom, event.name, panel, false);
-
+      let imageUrl: string = '';
+      try {
+        imageUrl = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.prefix, req.body.presentTo, req.body.presentFrom, event.name, panel, false);
+      } catch (err: any) {
+        if (err instanceof SensitiveImageError) {
+          Logger.Err('sensitive image detected');
+          return res.status(StatusCodes.BAD_REQUEST).json({errorType: 'SENSITIVE_IMAGE', isError: 1});
+        } else {
+          throw err;
+        }
+      }
+    
       const fsRepo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand = new FlowerStand(req.body.name, req.body.presentTo, req.body.presentFrom, event, req.body.organizerName, remoteIp, this.generateAdminKey(), this.generateParticipationCode(), baseDesign, imageUrl);
       flowerStand.description = req.body.description;
@@ -229,7 +240,7 @@ export class FlowerStandController {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
       }
       try {
-        const ret: IFlowerStandWithKeys = this.toInterfaceWithKeys(newStand);
+        const ret: FlowerStandResponseWithKeys = this.toResponseWithKeys(newStand);
         return res.status(StatusCodes.OK).json(ret);
       } catch (err) {
         Logger.Err(err);
@@ -343,7 +354,7 @@ export class FlowerStandController {
     return codes.join('-');
   }
 
-  private toInterface(flowerStand: FlowerStand): IFlowerStand {
+  private toResponse(flowerStand: FlowerStand): FlowerStandResponse {
     if (!flowerStand.id) {
       throw 'flower stand id not defined, should not reach here';
     }
@@ -410,12 +421,17 @@ export class FlowerStandController {
           name: flowerStand.baseDesign.group.name
         }
       },
-      imageUrl: flowerStand.imageUrl
+      imageUrl: flowerStand.imageUrl,
+      isError: 0
     };
   }
 
-  private toInterfaceWithKeys(flowerStand: FlowerStand): IFlowerStandWithKeys {
-    const base: IFlowerStand = this.toInterface(flowerStand);
-    return {adminKey: flowerStand.adminKey, participationCode: flowerStand.participationCode, ...base}
+  private toResponseWithKeys(flowerStand: FlowerStand): FlowerStandResponseWithKeys {
+    const base: FlowerStandResponse = this.toResponse(flowerStand);
+    if (base.isError === 0) {
+      return {adminKey: flowerStand.adminKey, participationCode: flowerStand.participationCode, ...base};
+    } else {
+      return {isError: 1, errorType: 'unknown, should not reach here'};
+    }
   }
 }

@@ -330,17 +330,28 @@ export default class FlowerStandCreateForm extends Vue {
 
     try {
       const res: AxiosResponse<FlowerStandPreviewResponse> = await axios.post<FlowerStandPreviewResponse>(`${process.env.VUE_APP_API_URL}/flowerstands/preview`, request);
-      if (res.status !== 200) {
-        this.$emit('error', `プレビュー生成に失敗しました code:${res.status}`);
-        return;
+      if (res.status !== 200 ) {
+        if (res.status === 400 && res.data.isError === 1 && res.data.errorType === 'SENSITIVE_IMAGE') {
+          this.$emit('error', `画像に不適切な要素が含まれています code:${res.status}`);
+          return;
+        }else {
+          this.$emit('error', `プレビュー生成に失敗しました code:${res.status}`);
+          return;
+        }
       }
 
-      this.imageUrl = res.data.imageUrl;
-      this.$emit('progress-change', false);
-      this.preview = true;
+      if (res.data.isError === 0) {
+        this.imageUrl = res.data.imageUrl;
+        this.$emit('progress-change', false);
+        this.preview = true;
+      }
     } catch (err: any) {
       const e: AxiosError = err;
-      this.$emit('error', `プレビュー生成に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response && e.response.data.isError === 1 && e.response.data.errorType === 'SENSITIVE_IMAGE') {
+        this.$emit('error', `画像に不適切な要素が含まれています code:${e.response.status}`);
+      } else {
+        this.$emit('error', `プレビュー生成に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      }
     }
   }
 

@@ -55,7 +55,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { FlowerStandCreateRequest, FlowerStandCreateResponse } from '../models/FlowerStand';
+import { FlowerStandCreateRequest, FlowerStandCreateResponse, IFlowerStandCreateResponse } from '../models/FlowerStand';
 import FlowerStandCreateForm, { FlowerStandCreateData } from '../components/FlowerStandCreateForm.vue';
 
 @Component({
@@ -76,7 +76,7 @@ export default class Create extends Vue {
   }
 
   showResult = false;
-  newStand: FlowerStandCreateResponse | null = null;
+  newStand: IFlowerStandCreateResponse | null = null;
   copied = false;
 
   private isVue = (x: unknown): x is Vue => x instanceof Vue;
@@ -120,15 +120,27 @@ export default class Create extends Vue {
     try {
       const res: AxiosResponse<FlowerStandCreateResponse> = await axios.post<FlowerStandCreateResponse>(`${process.env.VUE_APP_API_URL}/flowerstands`, request);
       if (res.status !== 200) {
-        this.errorText = `フラワースタンド作成に失敗しました code:${res.status}`;
-        this.progress = false;
-        this.isError = true;
+        if (res.status === 400 && res.data.isError === 1 && res.data.errorType === 'SENSITIVE_IMAGE') {
+          this.errorText = `画像に不適切な要素が含まれています code:${res.status}`;
+          this.progress = false;
+          this.isError = true;
+          return;
+        } else {
+          this.errorText = `フラワースタンド作成に失敗しました code:${res.status}`;
+          this.progress = false;
+          this.isError = true;
+          return;
+        }
       }
-      this.newStand = res.data;
+      this.newStand = res.data.isError === 0 ? res.data : null;
       this.showResult = true;
     } catch (err: any) {
       const e: AxiosError<FlowerStandCreateResponse> = err;
-      this.errorText = `フラワースタンド作成に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
+      if (e.response && e.response.data.isError && e.response.data.errorType === 'SENSITIVE_IMAGE') {
+        this.errorText = `画像に不適切な要素が含まれています code:${e.response ? e.response.status : 'unknown'}`;
+      } else {
+        this.errorText = `フラワースタンド作成に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
+      }
       this.progress = false;
       this.isError = true;
     }

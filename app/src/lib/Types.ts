@@ -1,6 +1,7 @@
 const Types = {
+  FlowerStandImageGenerator: Symbol('FlowerStandImageGenerator'),
   ImageUploader: Symbol('IImageUploader'),
-  FlowerStandImageGenerator: Symbol('FlowerStandImageGenerator')
+  ImageModerator: Symbol('IImageModerator')
 }
 
 export default Types;

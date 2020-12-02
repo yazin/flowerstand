@@ -39,8 +39,9 @@ export interface FlowerStandPreviewRequest {
   panel: string | ArrayBuffer | null;
 }
 
-export interface FlowerStandPreviewResponse {
+export interface IFlowerStandPreviewResponse {
   imageUrl: string;
+  isError: 0;
 }
 
 export interface FlowerStandCreateRequest {
@@ -56,7 +57,7 @@ export interface FlowerStandCreateRequest {
   panel: string | ArrayBuffer | null;
 }
 
-export interface FlowerStandCreateResponse {
+export interface IFlowerStandCreateResponse {
   id: number;
   name: string;
   presentTo: string;
@@ -70,6 +71,7 @@ export interface FlowerStandCreateResponse {
   imageUrl: string;
   adminKey: string;
   participationCode: string;
+  isError: 0;
 }
 
 export interface FlowerStandUpdateRequest {
@@ -79,3 +81,11 @@ export interface FlowerStandUpdateRequest {
   description: string;
   projectUrl: string;
 }
+
+export interface IFlowerStandError {
+  isError: 1;
+  errorType: string;
+}
+
+export type FlowerStandCreateResponse = IFlowerStandCreateResponse | IFlowerStandError;
+export type FlowerStandPreviewResponse = IFlowerStandPreviewResponse | IFlowerStandError;

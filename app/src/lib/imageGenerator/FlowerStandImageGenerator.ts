@@ -1,10 +1,11 @@
-import fs from 'fs';
 import { injectable, inject } from 'inversify';
 import axios, { AxiosResponse } from 'axios';
 import sharp from 'sharp';
 import { TextToImageConverter } from './TextToImageConverter';
 import { IImageUploader } from '../ImageUploader/IImageUploader';
 import Types from '../Types';
+import { IImageModerator } from '../imageModerator/IImageModerator';
+import { SensitiveImageError } from '../Errors';
 
 export interface IPanelData {
   data: Buffer;
@@ -16,13 +17,22 @@ export interface IPanelData {
 export class FlowerStandImageGenerator {
   private readonly converter: TextToImageConverter;
   private readonly uploader: IImageUploader;
+  private readonly moderator: IImageModerator;
 
-  constructor(@inject(Types.ImageUploader) uploader: IImageUploader) {
+  constructor(@inject(Types.ImageUploader) uploader: IImageUploader, @inject(Types.ImageModerator) moderator: IImageModerator) {
     this.converter = new TextToImageConverter();
     this.uploader = uploader;
+    this.moderator = moderator;
   }
 
   public async generateFlowerStandImage(baseDesignUrl: string, prefix: string, presentTo: string, presentFrom: string, eventName: string, panel: IPanelData | null = null, isPreview: boolean = false): Promise<string> {
+    if (panel) {
+      const isAppropriate: boolean = await this.moderator.moderate(panel.data);
+      if (!isAppropriate) {
+        throw new SensitiveImageError();
+      }
+    }
+
     const res: AxiosResponse<ArrayBuffer> = await axios.get<ArrayBuffer>(baseDesignUrl, {responseType: 'arraybuffer', headers: {'Content-Type': 'image/png'}});
     if (res.status !== 200) {
       throw new Error(`S3 respond ${res.status} for ${baseDesignUrl}`);

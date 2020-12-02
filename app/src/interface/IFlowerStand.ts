@@ -2,7 +2,11 @@ import { IEvent } from './IEvent';
 import { IParticipant } from './IParticipant';
 import { IBaseDesign } from './IBaseDesign';
 
-export interface IFlowerStand {
+export interface IFlowerStandError {
+  errorType: string;
+  isError: 1;
+}
+export interface IFlowerStandResponse {
   id: number;
   name: string;
   presentTo: string;
@@ -14,16 +18,24 @@ export interface IFlowerStand {
   participants: IParticipant[];
   baseDesign: IBaseDesign;
   imageUrl: string;
+  isError: 0;
 }
 
-export interface IFlowerStandWithKeys extends IFlowerStand {
+export type FlowerStandResponse = IFlowerStandResponse | IFlowerStandError;
+
+export interface IFlowerStandResponseWithKeys extends IFlowerStandResponse {
   adminKey: string;
   participationCode: string;
 }
 
-export interface IFlowerStandPreview {
+export type FlowerStandResponseWithKeys = IFlowerStandResponseWithKeys | IFlowerStandError;
+
+export interface IFlowerStandPreviewResponse {
   imageUrl: string;
+  isError: 0;
 }
+
+export type FlowerStandPreviewResponse = IFlowerStandPreviewResponse | IFlowerStandError;
 
 export interface IFlowerStandGetRequestParams {
   id: number;
