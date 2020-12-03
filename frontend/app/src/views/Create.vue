@@ -55,6 +55,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import VueScrollTo from 'vue-scrollto';
 import { FlowerStandCreateRequest, FlowerStandCreateResponse, IFlowerStandCreateResponse } from '../models/FlowerStand';
 import FlowerStandCreateForm, { FlowerStandCreateData } from '../components/FlowerStandCreateForm.vue';
 
@@ -68,18 +69,16 @@ export default class Create extends Vue {
   isError = false;
   errorText = '';
 
-  errorCaptured(err: Error): boolean {
-    this.progress = false;
-    this.errorText = err.message;
-    this.isError = true;
-    return false;
-  }
-
   showResult = false;
   newStand: IFlowerStandCreateResponse | null = null;
   copied = false;
 
   private isVue = (x: unknown): x is Vue => x instanceof Vue;
+
+  errorCaptured(err: Error): boolean {
+    this.onError(err.message);
+    return false;
+  }
 
   private onProgressChange(isProgress: boolean): void {
     this.progress = isProgress;
@@ -89,6 +88,7 @@ export default class Create extends Vue {
     this.progress = false;
     this.errorText = message;
     this.isError = true;
+    VueScrollTo.scrollTo('body');
   }
 
   private onCreate(data: FlowerStandCreateData): void {
@@ -121,14 +121,10 @@ export default class Create extends Vue {
       const res: AxiosResponse<FlowerStandCreateResponse> = await axios.post<FlowerStandCreateResponse>(`${process.env.VUE_APP_API_URL}/flowerstands`, request);
       if (res.status !== 200) {
         if (res.status === 400 && res.data.isError === 1 && res.data.errorType === 'SENSITIVE_IMAGE') {
-          this.errorText = `画像に不適切な要素が含まれています code:${res.status}`;
-          this.progress = false;
-          this.isError = true;
+          this.onError(`画像に不適切な要素が含まれています code:${res.status}`);
           return;
         } else {
-          this.errorText = `フラワースタンド作成に失敗しました code:${res.status}`;
-          this.progress = false;
-          this.isError = true;
+          this.onError(`フラワースタンド作成に失敗しました code:${res.status}`);
           return;
         }
       }
@@ -137,12 +133,10 @@ export default class Create extends Vue {
     } catch (err: any) {
       const e: AxiosError<FlowerStandCreateResponse> = err;
       if (e.response && e.response.data.isError && e.response.data.errorType === 'SENSITIVE_IMAGE') {
-        this.errorText = `画像に不適切な要素が含まれています code:${e.response ? e.response.status : 'unknown'}`;
+        this.onError(`画像に不適切な要素が含まれています code:${e.response ? e.response.status : 'unknown'}`);
       } else {
-        this.errorText = `フラワースタンド作成に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
+        this.onError(`フラワースタンド作成に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
       }
-      this.progress = false;
-      this.isError = true;
     }
   }
 

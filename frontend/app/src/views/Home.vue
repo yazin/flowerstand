@@ -10,6 +10,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import VueScrollTo from 'vue-scrollto';
 import FlowerStandList from '../components/FlowerStandList.vue';
 
 @Component({
@@ -22,9 +23,14 @@ export default class Home extends Vue {
   errorText = '';
   errorCaptured(err: Error): boolean {
     console.error(err);
-    this.errorText = err.message;
-    this.isError = true;
+    this.onError(err.message);
     return false;
+  }
+
+  private onError(message: string): void {
+    this.errorText = message;
+    this.isError = true;
+    VueScrollTo.scrollTo('body');
   }
 }
 </script>

@@ -15,6 +15,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import VueScrollTo from 'vue-scrollto';
 import { FlowerStand } from '../models/FlowerStand';
 import { Participant } from '../models/Participant';
 import ParticipantManageForm from '../components/ParticipantManageForm.vue';
@@ -57,9 +58,15 @@ export default class ParticipantManage extends Vue {
 
   errorCaptured(err: Error): boolean {
     console.error(err);
-    this.errorText = err.message;
-    this.isError = true;
+    this.onError(err.message);
     return false;
+  }
+
+  private onError(message: string): void {
+    this.errorText = message;
+    this.progress = false;
+    this.isError = true;
+    VueScrollTo.scrollTo('body');
   }
 
   created(): void {
@@ -74,16 +81,14 @@ export default class ParticipantManage extends Vue {
     try {
       const res: AxiosResponse<FlowerStand> = await axios.get<FlowerStand>(`${process.env.VUE_APP_API_URL}/flowerstands/${this.$route.params.id}`);
       if (res.status !== 200) {
-        this.progress = false;
-        throw new Error(`データ取得に失敗しました code:${res.status}`);
+        this.onError(`データ取得に失敗しました code:${res.status}`);
+        return;
       }
       this.flowerStand = res.data;
       this.progress = false;
     } catch (err: any) {
-      this.progress = false;
       const e: AxiosError<FlowerStand> = err;
-      this.errorText = `データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
-      this.isError = true;
+      this.onError(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
   }
 
@@ -93,34 +98,26 @@ export default class ParticipantManage extends Vue {
       for (const id of participantIds) {
         const res: AxiosResponse<void> = await axios.delete<void>(`${process.env.VUE_APP_API_URL}/participants/${id}?adminKey=${this.adminKey}`);
         if (res.status !== 200) {
-          this.progress = false;
-          this.errorText = `参加者の削除に失敗しました code:${res.status}`;
-          this.isError = true;
+          this.onError(`参加者の削除に失敗しました code:${res.status}`);
           return;
         }
       }
     } catch (err: any) {
-      this.progress = false;
       const e: AxiosError<void> = err;
-      this.errorText = `参加者の削除に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
-      this.isError = true;
+      this.onError(`参加者の削除に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
       return;
     }
 
     try {
       const res: AxiosResponse<Participant[]> = await axios.get<Participant[]>(`${process.env.VUE_APP_API_URL}/participants/`);
       if (res.status !== 200) {
-        this.progress = false;
-        this.errorText = `参加者情報の取得に失敗しました code:${res.status}`;
-        this.isError = true;
+        this.onError(`参加者情報の取得に失敗しました code:${res.status}`);
         return;
       }
       this.flowerStand.participants = res.data;
     } catch (err: any) {
       const e: AxiosError<Participant[]> = err;
-      this.progress = false;
-      this.errorText = `参加者情報の取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`;
-      this.isError = true;
+      this.onError(`参加者情報の取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
   }
 }

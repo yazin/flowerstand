@@ -23,12 +23,14 @@
     "vue-infinite-loading": "^2.4.5",
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.4.9",
+    "vue-scrollto": "^2.20.0",
     "vue-social-sharing": "^3.0.4",
     "vuetify": "^2.3.19"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/hard-source-webpack-plugin": "^1.0.1",
+    "@types/vue-scrollto": "^2.17.1",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.5.9",
