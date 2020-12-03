@@ -4,6 +4,6 @@ module.exports = {
     "vuetify"
   ],
   "configureWebpack": {
-    "plugins": [new HardSourceWebpackPlugin()]
+    "plugins": process.env.NODE_ENV === 'development' ? [new HardSourceWebpackPlugin()] : []
   }
 }

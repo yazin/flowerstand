@@ -144,6 +144,61 @@
             </ValidationProvider>
           </v-col>
         </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-checkbox
+              v-model="participateAfterCreate"
+              label="作成後にこのフラワースタンドに参加する"/>
+          </v-col>
+        </v-row>
+        <v-row v-if="participateAfterCreate">
+          <v-col cols="12" sm="12" md="6">
+            <ValidationProvider name="Twitter ID" rules="alpha_dash|max:15|regex:^(?!@).*$" v-slot="{ errors, valid }">
+              <v-text-field
+                prefix="@"
+                v-model="participant.twitterId"
+                :counter="15"
+                label="Twitter ID（任意）"
+                :success="valid"
+                :error-messages="errors"/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="12" sm="12" md="6">
+            <ValidationProvider name="Instagram ID" rules="alpha_dash|max:30|regex:^(?!@).*$" v-slot="{ errors, valid }">
+              <v-text-field
+                prefix="@"
+                v-model="participant.instagramId"
+                :counter="30"
+                label="Instagram ID（任意）"
+                :success="valid"
+                :error-messages="errors"/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="12" sm="12" md="6">
+            <ValidationProvider name="Facebook ID" rules="alpha_dash|max:50|regex:^(?!@).*$" v-slot="{ errors, valid }">
+              <v-text-field
+                prefix="@"
+                v-model="participant.facebookId"
+                :counter="50"
+                label="Facebook ID（任意）"
+                :success="valid"
+                :error-messages="errors"/>
+            </ValidationProvider>
+          </v-col>
+          <v-col cols="12" sm="12" md="6">
+            <ValidationProvider name="Mastodon ID" rules="max:255|regex:^(?!@).+@.+$" v-slot="{ errors, valid }">
+              <v-text-field
+                prefix="@"
+                v-model="participant.mastodonId"
+                :counter="255"
+                label="Mastodon ID（任意）"
+                hint="@foo@example.com"
+                persistent-hint
+                :success="valid"
+                :error-messages="errors"/>
+            </ValidationProvider>
+          </v-col>
+        </v-row>
         <v-row v-if="preview">
           <v-col cols="12">
             <v-img v-bind:src="imageUrl" max-width="300" class="mx-auto"/>
@@ -176,11 +231,12 @@
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
-import { required, max, mimes, size, regex } from 'vee-validate/dist/rules';
+import { required, max, mimes, size, regex, alpha_dash as alphaDash } from 'vee-validate/dist/rules';
 import { FlowerStandPreviewRequest, FlowerStandPreviewResponse } from '../models/FlowerStand';
 import { Event } from '../models/Event';
 import { Group } from '../models/Group';
 import { BaseDesign } from '../models/BaseDesign';
+import { ParticipantCreateData } from '../models/Participant';
 
 export interface FlowerStandCreateData {
   name: string;
@@ -193,6 +249,8 @@ export interface FlowerStandCreateData {
   baseDesignId: number;
   prefix: string;
   panel: Blob | null;
+  participateAfterCreate: boolean;
+  participant: ParticipantCreateData;
 }
 
 extend('required', required);
@@ -200,6 +258,7 @@ extend('max', max);
 extend('mimes', mimes);
 extend('size', size);
 extend('regex', regex);
+extend('alpha_dash', alphaDash);
 
 @Component({
   components: {
@@ -223,6 +282,17 @@ export default class FlowerStandCreateForm extends Vue {
   isKasuKasu = false;
 
   preview = false;
+
+  participateAfterCreate = false;
+  participant: ParticipantCreateData = {
+    flowerStandId: NaN,
+    name: '',
+    twitterId: '',
+    instagramId: '',
+    facebookId: '',
+    mastodonId: '',
+    participationCode: ''
+  }
 
   events: Event[] = [];
   baseDesigns: BaseDesign[] = [];
@@ -369,7 +439,9 @@ export default class FlowerStandCreateForm extends Vue {
       eventId: this.event.id,
       baseDesignId: this.baseDesign.id,
       prefix: this.prefix,
-      panel: this.panel
+      panel: this.panel,
+      participateAfterCreate: this.participateAfterCreate,
+      participant: this.participant
     }
     this.$emit('create', data);
   }

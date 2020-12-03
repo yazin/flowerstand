@@ -103,15 +103,7 @@
 import { Component, Emit, Vue } from 'vue-property-decorator';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, length, max, regex, alpha_dash as alphaDash } from 'vee-validate/dist/rules';
-
-export interface ParticipantData {
-  name: string;
-  twitterId: string;
-  instagramId: string;
-  facebookId: string;
-  mastodonId: string;
-  participationCode: string;
-}
+import { ParticipantCreateData } from '../models/Participant';
 
 extend('required', required);
 extend('length', length);
@@ -126,7 +118,8 @@ extend('alpha_dash', alphaDash);
   }
 })
 export default class ParticipateForm extends Vue {
-  participant: ParticipantData = {
+  participant: ParticipantCreateData = {
+    flowerStandId: NaN,
     name: '',
     twitterId: '',
     instagramId: '',
@@ -136,7 +129,7 @@ export default class ParticipateForm extends Vue {
   }
 
   @Emit('participate')
-  private onClickParticipate(): ParticipantData {
+  private onClickParticipate(): ParticipantCreateData {
     return this.participant;
   }
 

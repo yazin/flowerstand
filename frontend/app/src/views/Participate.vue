@@ -9,7 +9,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import VueScrollTo from 'vue-scrollto';
-import ParticipateForm, { ParticipantData } from '../components/ParticipateForm.vue';
+import ParticipateForm from '../components/ParticipateForm.vue';
+import { ParticipantCreateData } from '../models/Participant';
 
 @Component({
   components: {
@@ -32,8 +33,9 @@ export default class Participate extends Vue {
     VueScrollTo.scrollTo('body');
   }
 
-  private async onParticipate(participant: ParticipantData): Promise<void> {
+  private async onParticipate(participant: ParticipantCreateData): Promise<void> {
     try {
+      participant.flowerStandId = Number.parseInt(this.$route.params.id, 10);
       const res: AxiosResponse<void> = await axios.post<void>(`${process.env.VUE_APP_API_URL}/participants`, participant);
       if (res.status === 401) {
         this.onError('参加コードが無効です');

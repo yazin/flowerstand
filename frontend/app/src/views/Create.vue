@@ -11,12 +11,13 @@
     <FlowerStandCreateForm @create="onCreate" @progress-change="onProgressChange" @error="onError"/>
     <v-dialog v-model="showResult" ref="successDialog" persistent>
       <v-card>
-        <v-card-title class="headline">成功</v-card-title>
+        <v-card-title class="headline">{{resultTitle}}</v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col>
-                <div>フラワースタンドを作成しました。以下の「管理キー」と「参加コード」を必ず記録してください。このダイアログを閉じると以降確認できません。</div>
+                <div>{{resultText}}</div>
+                <div>以下の「管理キー」と「参加コード」を必ず記録してください。このダイアログを閉じると以降確認できません。</div>
               </v-col>
             </v-row>
             <v-row>
@@ -72,6 +73,8 @@ export default class Create extends Vue {
   showResult = false;
   newStand: IFlowerStandCreateResponse | null = null;
   copied = false;
+  resultTitle = '';
+  resultText = '';
 
   private isVue = (x: unknown): x is Vue => x instanceof Vue;
 
@@ -129,7 +132,6 @@ export default class Create extends Vue {
         }
       }
       this.newStand = res.data.isError === 0 ? res.data : null;
-      this.showResult = true;
     } catch (err: any) {
       const e: AxiosError<FlowerStandCreateResponse> = err;
       if (e.response && e.response.data.isError && e.response.data.errorType === 'SENSITIVE_IMAGE') {
@@ -137,7 +139,30 @@ export default class Create extends Vue {
       } else {
         this.onError(`フラワースタンド作成に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
       }
+      return;
     }
+
+    this.resultTitle = '成功';
+    this.resultText = 'フラワースタンドを作成しました。';
+
+    if (data.participateAfterCreate && this.newStand) {
+      data.participant.flowerStandId = this.newStand.id;
+      data.participant.name = data.organizerName;
+      data.participant.participationCode = this.newStand.participationCode;
+      try {
+        const res: AxiosResponse<void> = await axios.post<void>(`${process.env.VUE_APP_API_URL}/participants`, data.participant);
+        if (res.status !== 200) {
+          this.resultTitle = '参加失敗';
+          this.resultText = `フラワースタンドを作成しましたが参加に失敗しました（code: ${res.status}）。`
+        }
+      } catch (err: any) {
+        const e: AxiosError<void> = err;
+        this.resultTitle = '参加失敗';
+        this.resultText = `フラワースタンドを作成しましたが参加に失敗しました（code: ${e.response ? e.response.status : 'unknown'}）。`;
+      }
+    }
+
+    this.showResult = true;
   }
 
   private async onCopyAdminKey(): Promise<void> {
