@@ -101,7 +101,8 @@ export class FlowerStandController {
         where: whereRaw.join(' and '),
         relations: ['participants', 'event', 'event.groups', 'baseDesign', 'baseDesign.group'],
         skip: req.query.offset ? req.query.offset : undefined,
-        take: req.query.limit ? req.query.limit : undefined});
+        take: req.query.limit ? req.query.limit : undefined,
+        order: {id: 'DESC'}});
 
       const ret: FlowerStandResponse[] = flowerStands.map((flowerStand: FlowerStand): FlowerStandResponse => {
         return this.toResponse(flowerStand);
