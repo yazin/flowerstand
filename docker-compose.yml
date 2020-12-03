@@ -17,7 +17,6 @@ services:
   app:
     build: ./app
     container_name: flowerstand_app
-    env_file: ./app/app.env
     ports:
       - 3000:3000
     volumes:

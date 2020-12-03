@@ -14,13 +14,13 @@ Rename `mysql/mysql.env.example` to `mysql.env` and specify parameters. You may 
 
 ### Server-side
 
-Rename `app/app.env.example` to `app.env` and specify parameters. Database related parameters have to match with `mysql.env` created above.
+Rename `app/.env.example` to `.env` and specify parameters. Database related parameters have to match with `mysql.env` created above.
 
 Specify `NODE_ENV=development` for development environment.
 
 ### Front-end
 
-Rename `frontend/app/app.env.example` to `.env.development` and specify API URL. No trailing slash.
+Noting to do.
 
 ### Install packages and initialize Database
 
@@ -61,6 +61,7 @@ Front-end may not working correctly on some old browsers. I have no plan to supp
 ### Image Processing
 
 - [Sharp](https://sharp.pixelplumbing.com/)
+- AWS Rekognition
 
 ## API Spec
 

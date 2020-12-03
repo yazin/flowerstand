@@ -2,6 +2,7 @@ node_modules
 /img
 /app/dist
 /app/src/seeder
+.env
 *.env
 .DS_STORE
 *.code-workspace
