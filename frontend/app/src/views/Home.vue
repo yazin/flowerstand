@@ -22,7 +22,6 @@ export default class Home extends Vue {
   isError = false;
   errorText = '';
   errorCaptured(err: Error): boolean {
-    console.error(err);
     this.onError(err.message);
     return false;
   }

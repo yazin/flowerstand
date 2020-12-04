@@ -57,7 +57,6 @@ export default class ParticipantManage extends Vue {
   adminKey = '';
 
   errorCaptured(err: Error): boolean {
-    console.error(err);
     this.onError(err.message);
     return false;
   }

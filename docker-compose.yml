@@ -38,6 +38,17 @@ services:
       - flowerstand
     depends_on:
       - app
+  nginx:
+    build: ./nginx
+    container_name: flowerstand_nginx
+    volumes:
+      - ./frontend/app/dist:/tmp/html
+    ports:
+      - 80:80
+    networks:
+      - flowerstand
+    depends_on:
+      - app
 networks: 
   flowerstand:
 volumes: 
