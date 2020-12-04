@@ -1,9 +1,7 @@
-import fs from 'fs';
 import * as AWS from 'aws-sdk';
 import { injectable } from 'inversify';
 import { v4 as uuidv4 } from 'uuid';
 import { IImageUploader } from './IImageUploader';
-import { Logger } from '@overnightjs/logger';
 
 AWS.config.update({
   region: process.env.AWS_REGION
