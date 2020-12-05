@@ -5,6 +5,7 @@ phases:
       nodejs: 12
   pre_build:
     commands:
+      - DEFAULT=`pwd`
       - echo install packages for serverside...
       - cd app
       - npm isntall
@@ -15,6 +16,7 @@ phases:
       - cd $DEFAULT
   build:
     commands:
+      - DEFAULT=`pwd`
       - echo build serverside...
       - cd app
       - npm run build
