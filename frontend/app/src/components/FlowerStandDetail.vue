@@ -133,7 +133,6 @@ export default class FlowerStandDetail extends Vue {
 
     const parts: string[] = mastodonId.split('@');
     if (parts.length < 2) {
-      console.error(`invalid mastodonId ${mastodonId}`);
       return '';
     }
 
