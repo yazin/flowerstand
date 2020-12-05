@@ -35,3 +35,4 @@ artifacts:
     - app/package.json
     - app/package-lock.json
     - frontend/app/dist/**/*
+    - appspec.yml
