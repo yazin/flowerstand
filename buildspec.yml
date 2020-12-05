@@ -1,0 +1,35 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  pre_build:
+    commands:
+      - echo install packages for serverside...
+      - cd app
+      - npm isntall
+      - echo install packages for frontend...
+      - cd $DEFAULT
+      - cd frontend/app
+      - npm install
+      - cd $DEFAULT
+  build:
+    commands:
+      - echo build serverside...
+      - cd app
+      - npm run build
+      - echo build frontend...
+      - cd $DEFAULT
+      - cd frontend/app
+      - npm run build:prod
+  post_build:
+    commands:
+      - echo build complete on `date`
+artifacts:
+  files:
+    - app/dist/**/*
+    - app/resource/image/**/*
+    - app/ormconfig.js
+    - app/package.json
+    - app/package-lock.json
+    - frontend/app/dist/**/*
