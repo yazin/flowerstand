@@ -9,12 +9,12 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node ./src/index.ts",
-    "dev:watch": "ts-node-dev ./src/index.ts",
+    "dev": "TS_NODE=true ts-node ./src/index.ts",
+    "dev:watch": "TS_NODE=true ts-node-dev ./src/index.ts",
     "build": "npm-run-all clean tsc",
     "clean": "rimraf dist/*",
     "tsc": "tsc",
-    "start": "node ."
+    "start": "TS_NODE= node dist/index.js"
   },
   "dependencies": {
     "@overnightjs/core": "^1.7.5",

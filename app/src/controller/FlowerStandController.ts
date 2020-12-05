@@ -24,7 +24,7 @@ import {
 import { IParticipant } from '../interface/IParticipant';
 import { IGroup } from '../interface/IGroup';
 import { FlowerStandImageGenerator, IPanelData } from '../lib/imageGenerator/FlowerStandImageGenerator';
-import container from '../../inversify.config';
+import container from '../inversify.config';
 import Types from '../lib/Types';
 import { SensitiveImageError } from '../lib/Errors';
 
