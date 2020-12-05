@@ -1,0 +1,9 @@
+version: 0.0
+os: linux
+files:
+  - source: /frontend/app/dist
+    destination: /var/www/html
+    runas: nginx
+  - source: /app
+    destination: /home/ec2-user/flowerstand
+    runas: ec2-user
