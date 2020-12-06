@@ -18,7 +18,9 @@ exports.handler = async (event) => {
       Quiet: true
     }
   };
-  await s3.deleteObjects(deleteParams).promise();
+  if (deleteParams.Delete.Objects.length > 0) {
+    await s3.deleteObjects(deleteParams).promise(); 
+  }
 
   const response = {
     statusCode: 200,
