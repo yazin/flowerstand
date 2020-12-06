@@ -4,18 +4,18 @@ module.exports = {
     "vuetify"
   ],
   "configureWebpack": {
-    "plugins": process.env.NODE_ENV === 'development' ? [new HardSourceWebpackPlugin()] : []
-  },
-  "productionSourceMap": false,
-  "optimization": {
-    "splitChunks": {
-      "cacheGroups": {
-        "commons": {
-          "test": "/[\\/]node_modules[\\/]/",
-          "name": "vendor",
-          "chunks": "all"
+    "plugins": process.env.NODE_ENV === 'development' ? [new HardSourceWebpackPlugin()] : [],
+    "optimization": {
+      "splitChunks": {
+        "cacheGroups": {
+          "commons": {
+            "test": "/[\\/]node_modules[\\/]/",
+            "name": "vendor",
+            "chunks": "all"
+          }
         }
       }
     }
-  }
+  },
+  "productionSourceMap": false
 }
