@@ -31,7 +31,7 @@ artifacts:
   files:
     - app/dist/**/*
     - app/resource/image/**/*
-    - app/node_modules
+    - app/node_modules/**/*
     - app/ormconfig.js
     - app/package.json
     - app/package-lock.json
