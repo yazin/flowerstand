@@ -12,7 +12,7 @@ class FlowerStandServer extends Server {
   constructor() {
     super(process.env.NODE_ENV === 'development');
     this.app.use(bodyParser.json({limit: '1024kb'}));
-    this.app.use(bodyParser.urlencoded({extended: true, limit: '1024kb'}));
+    this.app.use(bodyParser.urlencoded({extended: true, limit: '5120kb'}));
     this.app.use(cors());
     this.setupControllers();
   }

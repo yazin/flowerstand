@@ -131,14 +131,14 @@
         </v-row>
         <v-row>
           <v-col cols="12">
-            <ValidationProvider name="パネルイラスト" rules="mimes:image/jpeg,image/png|size:1024" v-slot="{ errors, valid }">
+            <ValidationProvider name="パネルイラスト" rules="mimes:image/jpeg,image/png|size:4096" v-slot="{ errors, valid }">
               <v-file-input
                 v-model="panel"
                 accept=".jpg,.jpeg,.png"
                 label="パネルイラスト（任意）"
                 :success="valid"
                 :error-messages="errors"
-                hint="JPEGもしくはPNG形式・1MB以内・アスペクト比4:3推奨"
+                hint="JPEGもしくはPNG形式・4MB以内・アスペクト比4:3推奨"
                 persistent-hint
                 prepend-icon="mdi-image"/>
             </ValidationProvider>
