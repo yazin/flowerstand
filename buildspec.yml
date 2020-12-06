@@ -24,6 +24,9 @@ phases:
       - cd $DEFAULT
       - cd frontend/app
       - npm run build:prod
+      - cd $DEFAULT
+      - chmod +x deployment/before_install.sh
+      - chmod +x deployment/application_start.sh
   post_build:
     commands:
       - echo build complete on `date`
@@ -37,3 +40,5 @@ artifacts:
     - app/package-lock.json
     - frontend/app/dist/**/*
     - appspec.yml
+    - deployment/before_install.sh
+    - deployment/application_start.sh
