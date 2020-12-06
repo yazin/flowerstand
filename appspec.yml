@@ -9,8 +9,8 @@ files:
     runas: ec2-user
 hooks:
   BeforeInstall:
-    location: deployment/before_install.sh
-    runas: ec2-user
+    - location: deployment/before_install.sh
+      runas: ec2-user
   ApplicationStart:
-    location: deployment/application_start.sh
-    runas: ec2-user
+    - location: deployment/application_start.sh
+      runas: ec2-user
