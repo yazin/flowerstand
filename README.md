@@ -2,11 +2,13 @@
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K72GPJM)
 
-## Development setup (Docker)
+## Development Setup (Docker)
 
 ### Requirements
 
-Just Docker. Tested on Docker Desktop for Mac 2.4.0.0.
+- Docker
+- AWS account
+- At least 2GB memory for Docker
 
 ### Database
 
@@ -22,7 +24,7 @@ Noting to do.
 
 ### Environmet Variables Reference for Development Environment on Docker
 
-#### mysql.env
+#### mysql/mysql.env
 
 - MYSQL_ROOT_HOST
   - Fix to `%`.
@@ -62,12 +64,34 @@ Noting to do.
 
 #### frontend/app/.env.development
 
-- NODE_ENV
-  - Fix to 'development'.
 - VUE_APP_API_URL
-  - Server-side API root URL. No trailing slash.
+  - Serverside API root URL. No trailing slash.
 - VUE_APP_ROOT_URL
-  - Front-end root URL. No trailing slash.
+  - Frontend root URL. No trailing slash.
+
+### S3 Bucket Setup
+
+Public access is needed for S3 bucket. Set Block Public Access to off and use Bucket Policy below:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": [
+                "arn:aws:s3:::(PLACE YOUR BUCKET NAME HERE)",
+                "arn:aws:s3:::(PLACE YOUR BUCKET NAME HERE)/*"
+            ]
+        }
+    ]
+}
+```
+
+Then create 2 floders in bucket, `preview` and `public`.
 
 ### Install packages and initialize Database
 
@@ -81,7 +105,42 @@ Database is automatically synchronized with entities in app/entity on boot app c
 
 Make sure run `npm install` in containers, not host. Some required modules such as `node-sass` or `fibers` will be natively compiled for platform.
 
-That's all. Access `http://localhost:8080` for test.
+Now system is running development mode. Access `http://localhost:8080` to test it.
+
+`nginx` container is not needed at this phase. You can comment-out `nginx` service from `docker-compose.yml`.
+
+## Ready for Production
+
+### Build
+
+```
+$ docker-compose run --rm --no-deps app npm run build
+$ docker-compose run --rm --no-deps web npm run build:prod
+```
+
+### Run
+
+Change `app` container's `command` in `docker-compose.yml` from
+
+```
+    command: npm run dev:watch
+```
+
+to
+
+```
+    command: npm run start
+```
+
+then
+
+```
+$ docker-compose up -d
+```
+
+Now system is running on production mode. Access `http://localhost` to test it.
+
+`web` container is not needed at this phase. You can comment-out `web` service from `docker-compose.yml`.
 
 ## Tech Stacks
 
@@ -90,20 +149,20 @@ That's all. Access `http://localhost:8080` for test.
 - MySQL
 - [TypeORM](https://typeorm.io/)
 
-### Server-side
+### Serverside
 
 - [OvernightJs](https://github.com/seanpmaxwell/overnight)
 - Express
 - Node
 - TypeScript
 
-### Front-end
+### Frontend
 
 - Vue.js
 - Vuetify
 - TypeScript
 
-Front-end may not working correctly on some old browsers. I have no plan to support them. For Windows user, let's uninstall IE11 and upgrade Edge to Chromium edition for better world.
+Frontend may not working correctly on some old browsers. I have no plan to support them. For Windows user, let's uninstall IE11 and upgrade Edge to Chromium edition for better world.
 
 ### Image Processing
 
