@@ -12,7 +12,7 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/create',
-    name: 'create',
+    name: 'Create',
     component: () => import(/* webpackChunkName: "create" */ '../views/Create.vue')
   },
   {

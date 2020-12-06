@@ -6,5 +6,16 @@ module.exports = {
   "configureWebpack": {
     "plugins": process.env.NODE_ENV === 'development' ? [new HardSourceWebpackPlugin()] : []
   },
-  "productionSourceMap": false
+  "productionSourceMap": false,
+  "optimization": {
+    "splitChunks": {
+      "cacheGroups": {
+        "commons": {
+          "test": "/[\\/]node_modules[\\/]/",
+          "name": "vendor",
+          "chunks": "all"
+        }
+      }
+    }
+  }
 }
