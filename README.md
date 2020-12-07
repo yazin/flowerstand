@@ -167,7 +167,7 @@ Frontend may not working correctly on some old browsers. I have no plan to suppo
 ### Image Processing
 
 - [Sharp](https://sharp.pixelplumbing.com/)
-- AWS Rekognition
+- Amazon Rekognition
 
 ## API Spec
 
