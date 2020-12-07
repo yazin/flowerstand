@@ -2,6 +2,10 @@
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K72GPJM)
 
+## Document for user
+
+[https://docs.schoolidol.club/flowerstand/](https://docs.schoolidol.club/flowerstand/)
+
 ## Development Setup (Docker)
 
 ### Requirements
@@ -14,11 +18,11 @@
 
 Rename `mysql/mysql.env.example` to `mysql.env` and specify parameters. See reference below.
 
-### Server-side
+### Serverside
 
 Rename `app/.env.example` to `.env` and specify parameters. See reference below.
 
-### Front-end
+### Frontend
 
 Noting to do.
 
@@ -52,9 +56,9 @@ Noting to do.
 - AWS_ACCESS_KEY_ID
   - Your AWS access key.
 - AWS_SECRET_ACCESS_KEY
-  - Your aws secret access key.
+  - Your AWS secret access key.
 - AWS_REGION
-  - Region of S3 bucket and Rekognition.
+  - Region of S3 bucket and Rekognition, e.g. `ap-northeast-1`. Both must be in same region.
 - S3_BUCKET
   - S3 bucket name to store flower stand images.
 - REKOGNITION_MIN_CONFIDENCE
@@ -91,7 +95,7 @@ Public access is needed for S3 bucket. Set Block Public Access to off and use Bu
 }
 ```
 
-Then create 2 floders in bucket, `preview` and `public`.
+Then create 2 folders in bucket, `preview` and `public`.
 
 ### Install packages and initialize Database
 
@@ -110,6 +114,17 @@ Now system is running development mode. Access `http://localhost:8080` to test i
 `nginx` container is not needed at this phase. You can comment-out `nginx` service from `docker-compose.yml`.
 
 ## Ready for Production
+
+### Configuration
+
+Change `NODE_ENV` in `app/.env` to `production`.
+
+Create `frontend/app/.env.production` and specify URLs like:
+
+```
+VUE_APP_API_URL=http://localhost/api
+VUE_APP_ROOT_URL=http://localhost
+```
 
 ### Build
 
