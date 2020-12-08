@@ -54,7 +54,7 @@
 
       <v-btn text to="/" class="hidden-sm-and-down"><v-icon>mdi-flower-tulip</v-icon>フラワースタンド一覧</v-btn>
       <v-btn text to="/create" class="hidden-sm-and-down"><v-icon>mdi-plus-circle</v-icon>フラワースタンド作成</v-btn>
-      <v-btn text href="https://docs.schoolidol.club/flowerstand/" rel="noopner" target="_blank" class="hidden-sm-and-down"><v-icon>mdi-information</v-icon>このサイトについて</v-btn>
+      <v-btn text href="https://docs.schoolidol.club/flowerstand/" rel="noopener" target="_blank" class="hidden-sm-and-down"><v-icon>mdi-information</v-icon>このサイトについて</v-btn>
 
       <template v-slot:extension>
         <v-container fluid class="ma-0 pa-0">
