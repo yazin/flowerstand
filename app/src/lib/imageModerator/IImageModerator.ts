@@ -1,3 +1,3 @@
 export interface IImageModerator {
-  moderate(image: Buffer): Promise<boolean>
+  moderate(image: Buffer): Promise<boolean>;
 }

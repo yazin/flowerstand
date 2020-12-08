@@ -2,7 +2,7 @@
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K72GPJM)
 
-## Document for user
+## Document for Users
 
 [https://docs.schoolidol.club/flowerstand/](https://docs.schoolidol.club/flowerstand/)
 
@@ -156,6 +156,42 @@ $ docker-compose up -d
 Now system is running on production mode. Access `http://localhost` to test it.
 
 `web` container is not needed at this phase. You can comment-out `web` service from `docker-compose.yml`.
+
+## Implements New Image Storage / Image Moderator
+
+Currently, generated images are stored to Amazon S3, and uploaded images are modereted by Amazon Rekognition.
+
+If you want to use another services, you can implement new uploader and/or moderator and inject them.
+
+Dependency injection by [InversifyJs](https://github.com/inversify/InversifyJS).
+
+### interface IImageUploader
+
+`app/src/lib/imageUploader/IImageUploader.ts`
+
+```
+export interface IImageUploader {
+  upload(imageFile: Buffer, isPreview: boolean): Promise<string>;
+}
+```
+
+Create concrete class implements this interface, add `@Injectable()` decorator to class and modify `app/src/inversify.config.js` to inject it.
+
+Return uploaded image URL from `upload` method.
+
+### interface IImageModerator
+
+`app/src/lib/imageModerator/IImageModerator.ts`
+
+```
+export interface IImageModerator {
+  moderate(image: Buffer): Promise<boolean>;
+}
+```
+
+Create concrete class implements this interface, add `@Injectable()` decorator to class and modify `app/src/inversify.config.js` to inject it.
+
+Return `true` if image is appropriate `false` otherwise from `moderate` method.
 
 ## Tech Stacks
 
