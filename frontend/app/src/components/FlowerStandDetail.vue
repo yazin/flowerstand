@@ -83,6 +83,9 @@
         <v-card-text>
           <v-text-field
             v-model="adminKey"
+            :type="showAdminKey ? 'text' : 'password'"
+            :append-icon="showAdminKey ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append="showAdminKey = !showAdminKey"
             label="管理キー"/>
         </v-card-text>
         <v-card-text v-if="adminKeyError"><strong class="red--text text--lighten-1">管理キーが無効です</strong></v-card-text>
@@ -108,6 +111,7 @@ export default class FlowerStandDetail extends Vue {
   checkAdminKey = false;
   adminKeyError = false;
   nextPath = '';
+  showAdminKey = false;
 
   get rootUrl(): string {
     return process.env.VUE_APP_ROOT_URL;
