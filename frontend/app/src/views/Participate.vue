@@ -36,10 +36,6 @@ export default class Participate extends Vue {
     try {
       participant.flowerStandId = Number.parseInt(this.$route.params.id, 10);
       const res: AxiosResponse<void> = await axios.post<void>(`${process.env.VUE_APP_API_URL}/participants`, participant);
-      if (res.status === 401) {
-        this.onError('参加コードが無効です');
-        return;
-      }
       if (res.status !== 200) {
         this.onError(`参加に失敗しました code:${res.status}`);
         return;
@@ -47,6 +43,14 @@ export default class Participate extends Vue {
       this.$router.push({name: 'Detail', params: {id: this.$route.params.id}, query: {from: 'participate'}});
     } catch (err: any) {
       const e: AxiosError<void> = err;
+      if (e.response && e.response.status === 401) {
+        this.onError('参加コードが無効です');
+        return;
+      }
+      if (e.response && e.response.status === 403) {
+        this.onError('参加者が上限に達しています');
+        return;
+      }
       this.onError(`参加に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
   }

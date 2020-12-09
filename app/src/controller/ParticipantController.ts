@@ -103,6 +103,10 @@ export class ParticipantController {
         return res.status(StatusCodes.UNAUTHORIZED).json();
       }
 
+      if (flowerStand.participants && flowerStand.participants.length >= 100) {
+        return res.status(StatusCodes.FORBIDDEN).json();
+      }
+
       const participant = new Participant(req.body.name, flowerStand);
       if (req.body.twitterId) {
         participant.twitterId = req.body.twitterId;
