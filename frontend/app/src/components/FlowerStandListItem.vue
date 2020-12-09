@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="300">
+  <v-card max-width="300" class="mx-auto">
     <v-img v-bind:src="flowerStand.imageUrl"></v-img>
     <v-card-title>{{flowerStand.name}}</v-card-title>
     <v-card-subtitle>{{flowerStand.organizerName}}</v-card-subtitle>
