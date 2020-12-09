@@ -78,7 +78,7 @@
           </v-col>
         </v-row>
       </v-container>
-      <v-dialog v-model="confirm" persistent>
+      <v-dialog v-model="confirm" persistent max-width="500">
         <v-card>
           <v-card-title class="headline">フラワースタンド削除</v-card-title>
           <v-card-text>フラワースタンドを削除します。この操作は取り消せません。削除しますか？</v-card-text>

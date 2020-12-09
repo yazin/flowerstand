@@ -9,7 +9,7 @@
         indeterminate/>
     </v-overlay>
     <FlowerStandCreateForm @create="onCreate" @progress-change="onProgressChange" @error="onError"/>
-    <v-dialog v-model="showResult" ref="successDialog" persistent>
+    <v-dialog v-model="showResult" ref="successDialog" persistent max-width="600">
       <v-card>
         <v-card-title class="headline">{{resultTitle}}</v-card-title>
         <v-card-text>
