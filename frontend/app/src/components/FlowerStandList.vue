@@ -70,8 +70,9 @@ export default class FlowerStandList extends Vue {
         throw new Error('予期しないエラーが発生しました');
       }
 
+      loading.stateChanger.loaded();
+
       if (flowerStands.data.length < this.pageSize) {
-        loading.stateChanger.loaded();
         loading.stateChanger.complete();
       } else {
         loading.stateChanger.loaded();
@@ -96,6 +97,7 @@ export default class FlowerStandList extends Vue {
     }
 
     loading.stateChanger.reset();
+    loading.stateChanger.loaded();
 
     this.page = 0;
     const params: FlowerStandSearchRequestQuery = {
@@ -123,7 +125,6 @@ export default class FlowerStandList extends Vue {
       }
       this.flowerStands = flowerStands.data;
       if (flowerStands.data.length < this.pageSize) {
-        loading.stateChanger.loaded();
         loading.stateChanger.complete();
       } else {
         loading.stateChanger.loaded();
@@ -147,7 +148,6 @@ export default class FlowerStandList extends Vue {
       }
       this.flowerStands = this.flowerStands.concat(flowerStands.data);
       if (flowerStands.data.length < this.pageSize) {
-        $state.loaded();
         $state.complete();
       } else {
         $state.loaded();
