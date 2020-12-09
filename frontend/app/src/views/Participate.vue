@@ -44,7 +44,7 @@ export default class Participate extends Vue {
         this.onError(`参加に失敗しました code:${res.status}`);
         return;
       }
-      this.$router.push(`/detail/${this.$route.params.id}`);
+      this.$router.push({name: 'Detail', params: {id: this.$route.params.id}, query: {from: 'participate'}});
     } catch (err: any) {
       const e: AxiosError<void> = err;
       this.onError(`参加に失敗しました code:${e.response ? e.response.status : 'unknown'}`);

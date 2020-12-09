@@ -3,7 +3,7 @@ import { BaseDesign } from './BaseDesign';
 import { Participant } from './Participant';
 
 export interface FlowerStand {
-  id?: number;
+  id: number;
   name: string;
   presentTo: string;
   presentFrom: string;

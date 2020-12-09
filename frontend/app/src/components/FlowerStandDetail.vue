@@ -77,7 +77,7 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-    <v-dialog v-model="checkAdminKey" persistent>
+    <v-dialog v-model="checkAdminKey" persistent max-width="500">
       <v-card>
         <v-card-title class="headline">管理キー</v-card-title>
         <v-card-text>
