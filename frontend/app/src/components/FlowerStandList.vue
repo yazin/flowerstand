@@ -71,6 +71,7 @@ export default class FlowerStandList extends Vue {
       }
 
       if (flowerStands.data.length < this.pageSize) {
+        loading.stateChanger.loaded();
         loading.stateChanger.complete();
       } else {
         loading.stateChanger.loaded();
@@ -122,6 +123,7 @@ export default class FlowerStandList extends Vue {
       }
       this.flowerStands = flowerStands.data;
       if (flowerStands.data.length < this.pageSize) {
+        loading.stateChanger.loaded();
         loading.stateChanger.complete();
       } else {
         loading.stateChanger.loaded();
@@ -145,6 +147,7 @@ export default class FlowerStandList extends Vue {
       }
       this.flowerStands = this.flowerStands.concat(flowerStands.data);
       if (flowerStands.data.length < this.pageSize) {
+        $state.loaded();
         $state.complete();
       } else {
         $state.loaded();
