@@ -19,7 +19,7 @@
       <v-container>
         <v-row>
           <v-col cols="12">
-            <v-btn color="primary" class="mr-2" @click="onClickParticipate" :disabled="dayjs(flowerStand.event.endDate, 'YYYY-MM-DD') < dayjs().startOf('day')"><v-icon>mdi-account-plus</v-icon>参加</v-btn>
+            <v-btn color="primary" class="mr-2" @click="onClickParticipate" :disabled="!participatable"><v-icon>mdi-account-plus</v-icon>参加</v-btn>
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn color="success" class="ml-2" v-bind="attrs" v-on="on"><v-icon>mdi-cog</v-icon>管理</v-btn>
@@ -126,6 +126,10 @@ export default class FlowerStandDetail extends Vue {
       { network: 'facebook', name: 'Facebook', icon: 'mdi-facebook', color: '#1877f2' },
       { network: 'line', name: 'Line', icon: 'fab fah fa-line', color: '#00c300'}
     ];
+  }
+
+  get participatable(): boolean {
+    return dayjs(this.flowerStand.event.endDate, 'YYYY-MM-DD') < dayjs().startOf('day');
   }
 
   mounted(): void {
