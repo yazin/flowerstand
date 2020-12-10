@@ -17,5 +17,13 @@ module.exports = {
       }
     }
   },
+  "chainWebpack": (config) => {
+    config
+      .plugin('html')
+      .tap((args) => {
+        args[0].title = 'Virtual Flower Stand for LoveLive!';
+        return args;
+      });
+  },
   "productionSourceMap": false
 }
