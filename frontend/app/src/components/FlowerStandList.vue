@@ -5,7 +5,8 @@
         <FlowerStandFilterForm
           @change-event="changeFilter"
           @change-group="changeFilter"
-          @change-design="changeFilter">
+          @change-design="changeFilter"
+          @change-show-past-events="changeFilter">
         </FlowerStandFilterForm>
       </v-col>
     </v-row>
@@ -40,6 +41,7 @@ export default class FlowerStandList extends Vue {
   flowerStands: FlowerStand[] = [];
   errorText = '';
   page = 0;
+  condition: FilterCondition | null = null;
 
   get pageSize(): number {
     return 16;
@@ -50,7 +52,8 @@ export default class FlowerStandList extends Vue {
   async mounted(): Promise<void> {
     const params: FlowerStandSearchRequestQuery = {
       offset: 0,
-      limit: this.pageSize
+      limit: this.pageSize,
+      showPastEvents: 0
     };
     try {
       const flowerStands: AxiosResponse<FlowerStand[]> = await axios.get<FlowerStand[]>(`${process.env.VUE_APP_API_URL}/flowerstands`, {params: params});
@@ -99,10 +102,13 @@ export default class FlowerStandList extends Vue {
     loading.stateChanger.reset();
     loading.stateChanger.loaded();
 
+    this.condition = condition;
+
     this.page = 0;
     const params: FlowerStandSearchRequestQuery = {
       offset: 0,
-      limit: this.pageSize
+      limit: this.pageSize,
+      showPastEvents: condition.showPastEvent ? 1 : 0
     };
 
     if (condition.event) {
@@ -139,8 +145,22 @@ export default class FlowerStandList extends Vue {
     this.page++;
     const params: FlowerStandSearchRequestQuery = {
       offset: this.page * this.pageSize,
-      limit: this.pageSize
+      limit: this.pageSize,
+      showPastEvents: this.condition && this.condition.showPastEvent ? 1 : 0
     };
+
+    if (this.condition && this.condition.event) {
+      params.eventId = this.condition.event;
+    }
+
+    if (this.condition && this.condition.group) {
+      params.groupId = this.condition.group;
+    }
+
+    if (this.condition && this.condition.baseDesign) {
+      params.baseDesignId = this.condition.baseDesign;
+    }
+
     try {
       const flowerStands: AxiosResponse<FlowerStand[]> = await axios.get<FlowerStand[]>(`${process.env.VUE_APP_API_URL}/flowerstands`, {params: params});
       if (flowerStands.status !== 200) {

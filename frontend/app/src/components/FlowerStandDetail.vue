@@ -19,7 +19,7 @@
       <v-container>
         <v-row>
           <v-col cols="12">
-            <v-btn color="primary" class="mr-2" @click="onClickParticipate"><v-icon>mdi-account-plus</v-icon>参加</v-btn>
+            <v-btn color="primary" class="mr-2" @click="onClickParticipate" :disabled="dayjs(flowerStand.event.endDate, 'YYYY-MM-DD') < dayjs().startOf('day')"><v-icon>mdi-account-plus</v-icon>参加</v-btn>
             <v-menu offset-y>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn color="success" class="ml-2" v-bind="attrs" v-on="on"><v-icon>mdi-cog</v-icon>管理</v-btn>
@@ -101,6 +101,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse } from 'axios';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { FlowerStand, FlowerStandVerifyAdminKeyRequestBody } from '../models/FlowerStand';
 
 @Component
@@ -127,6 +129,7 @@ export default class FlowerStandDetail extends Vue {
   }
 
   mounted(): void {
+    dayjs.extend(customParseFormat);
     this.loading = false;
   }
 

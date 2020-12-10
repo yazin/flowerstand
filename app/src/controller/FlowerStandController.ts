@@ -82,6 +82,13 @@ export class FlowerStandController {
         whereRaw.push(`FlowerStand__baseDesign__group.id = ${req.query.groupId}`);
       }
 
+      if (req.query.showPastEvents == 0) {
+        const formatter: Intl.NumberFormat = new Intl.NumberFormat('ja', {minimumIntegerDigits: 2});
+        const now: Date = new Date();
+        const nowStr: string = `${now.getFullYear()}-${formatter.format(now.getMonth() + 1)}-${formatter.format(now.getDate())}`;
+        whereRaw.push(`FlowerStand__event.endDate >= '${nowStr}'`);
+      }
+
       if (req.query.offset && !isValidNumber(req.query.offset)) {
         Logger.Err(`invalid offset ${req.query.offset}`);
         return res.status(StatusCodes.BAD_REQUEST).json();

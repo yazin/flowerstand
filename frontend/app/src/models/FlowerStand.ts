@@ -23,6 +23,7 @@ export interface FlowerStandSearchRequestQuery {
   groupId?: number;
   offset?: number;
   limit?: number;
+  showPastEvents?: number;
 }
 
 export interface FlowerStandVerifyAdminKeyRequestBody {

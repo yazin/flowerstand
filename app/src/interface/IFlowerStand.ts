@@ -47,6 +47,7 @@ export interface IFlowerStandSearchRequestQuery {
   groupId?: number;
   offset?: number;
   limit?: number;
+  showPastEvents?: number;
 }
 
 export interface IFlowerStandVerifyAdminKeyRequestBody {

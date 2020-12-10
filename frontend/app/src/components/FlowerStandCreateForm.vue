@@ -230,6 +230,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, max, mimes, size, regex, alpha_dash as alphaDash } from 'vee-validate/dist/rules';
 import { FlowerStandPreviewRequest, FlowerStandPreviewResponse } from '../models/FlowerStand';
@@ -305,9 +307,10 @@ export default class FlowerStandCreateForm extends Vue {
   }
 
   async mounted(): Promise<void> {
+    dayjs.extend(customParseFormat);
     const events: AxiosResponse<Event[]> = await axios.get<Event[]>(`${process.env.VUE_APP_API_URL}/events`);
     if (events.status === 200) {
-      this.events = events.data;
+      this.events = events.data.filter((event: Event): event is Event => {return dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day')});
       this.allEvents = events.data;
     } else {
       throw new Error(`データ取得に失敗しました code:${events.status}`);
