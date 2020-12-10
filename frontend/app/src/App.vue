@@ -30,7 +30,7 @@
             <v-list-item-title>フラワースタンド作成</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item href="https://docs.schoolidol.club/flowerstand/" rel="noopner" target="_blank">
+        <v-list-item href="https://docs.schoolidol.club/flowerstand/" rel="noopener" target="_blank">
           <v-list-item-icon>
             <v-icon>mdi-information</v-icon>
           </v-list-item-icon>
