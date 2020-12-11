@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto my-12" max-width="80%" :loading="loading">
+  <v-card class="mx-auto my-12" :max-width="maxWidth" :loading="loading">
     <template slot="progress">
       <v-progress-circular
         :size="70"
@@ -130,6 +130,19 @@ export default class FlowerStandDetail extends Vue {
 
   get participatable(): boolean {
     return dayjs(this.flowerStand.event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day');
+  }
+
+  get maxWidth(): string {
+    switch (this.$vuetify.breakpoint.name) {
+      case 'xs':
+      case 'sm':
+      case 'md':
+        return '80%';
+      case 'lg':
+      case 'xl':
+      default:
+        return '1000';
+    }
   }
 
   mounted(): void {
