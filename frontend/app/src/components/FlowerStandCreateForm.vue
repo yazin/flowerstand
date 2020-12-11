@@ -239,6 +239,7 @@ import { Event } from '../models/Event';
 import { Group } from '../models/Group';
 import { BaseDesign } from '../models/BaseDesign';
 import { ParticipantCreateData } from '../models/Participant';
+import { LoadMasterDataResult } from '../plugins/store';
 
 export interface FlowerStandCreateData {
   name: string;
@@ -306,23 +307,18 @@ export default class FlowerStandCreateForm extends Vue {
     return ['祝公演', '祝', '祝ご出演'];
   }
 
-  async mounted(): Promise<void> {
+  async created(): Promise<void> {
+    if (!this.$store.isLoaded) {
+      const res: LoadMasterDataResult = await this.$store.loadMasterData();
+      if (res.isError) {
+        throw new Error(res.errorText);
+      }
+    }
+    this.allEvents = this.$store.allEvents;
     dayjs.extend(customParseFormat);
-    const events: AxiosResponse<Event[]> = await axios.get<Event[]>(`${process.env.VUE_APP_API_URL}/events`);
-    if (events.status === 200) {
-      this.events = events.data.filter((event: Event): event is Event => {return dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day')});
-      this.allEvents = events.data;
-    } else {
-      throw new Error(`データ取得に失敗しました code:${events.status}`);
-    }
-
-    const baseDesigns: AxiosResponse<BaseDesign[]> = await axios.get<BaseDesign[]>(`${process.env.VUE_APP_API_URL}/basedesigns`);
-    if (baseDesigns.status === 200) {
-      this.baseDesigns = baseDesigns.data;
-      this.allBaseDesigns = baseDesigns.data;
-    } else {
-      throw new Error(`データ取得に失敗しました code:${events.status}`);
-    }
+    this.events = this.$store.allEvents.filter((event: Event): event is Event => {return dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day')});
+    this.allBaseDesigns = this.$store.allBaseDesigns;
+    this.baseDesigns = this.$store.allBaseDesigns;
   }
 
   private onChangeEvent(): void {
@@ -344,13 +340,13 @@ export default class FlowerStandCreateForm extends Vue {
 
   private onChangeBaseDesign(): void {
     if (!this.baseDesign) {
-      this.events = this.allEvents;
+      this.events = this.allEvents.filter((event: Event): event is Event => {return dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day')});
       return;
     }
 
     const groupId = this.baseDesign.group.id;
     this.events = this.allEvents.filter((event: Event): event is Event => {
-      return event.groups.map((group: Group): number => group.id).indexOf(groupId) >= 0;
+      return event.groups.map((group: Group): number => group.id).indexOf(groupId) >= 0 && dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day');
     });
 
     if (this.event && this.event.groups.map((group: Group): number => group.id).indexOf(groupId) < 0) {

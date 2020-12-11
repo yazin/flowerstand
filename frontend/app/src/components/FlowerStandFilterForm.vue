@@ -55,12 +55,12 @@
 
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator';
-import axios, { AxiosResponse, AxiosError } from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Event } from '../models/Event';
 import { Group } from '../models/Group';
 import { BaseDesign } from '../models/BaseDesign';
+import { LoadMasterDataResult } from '../plugins/store';
 
 export interface FilterCondition {
   event: number | null;
@@ -86,38 +86,22 @@ export default class FlowerStandFilterForm extends Vue {
 
   showPastEvents = false;
 
-  async mounted(): Promise<void> {
-    dayjs.extend(customParseFormat);
-    try {
-      const events: AxiosResponse<Event[]> = await axios.get<Event[]>(`${process.env.VUE_APP_API_URL}/events`);
-      if (events.status === 200) {
-        this.events = events.data.filter((event: Event): event is Event => {
-          return dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day');
-        });
-        this.allEvents = events.data;
-      } else {
-        throw new Error(`データ取得に失敗しました code:${events.status}`);
+  async created(): Promise<void>  {
+    if (!this.$store.isLoaded) {
+      const res: LoadMasterDataResult = await this.$store.loadMasterData();
+      if (res.isError) {
+        throw new Error(res.errorText);
       }
-
-      const groups: AxiosResponse<Group[]> = await axios.get<Group[]>(`${process.env.VUE_APP_API_URL}/groups`);
-      if (groups.status === 200) {
-        this.groups = groups.data;
-        this.allGroups = groups.data;
-      } else {
-        throw new Error(`データ取得に失敗しました code:${events.status}`);
-      }
-
-      const baseDesigns: AxiosResponse<BaseDesign[]> = await axios.get<BaseDesign[]>(`${process.env.VUE_APP_API_URL}/basedesigns`);
-      if (baseDesigns.status === 200) {
-        this.baseDesigns = baseDesigns.data;
-        this.allBaseDesigns = baseDesigns.data;
-      } else {
-        throw new Error(`データ取得に失敗しました code:${events.status}`);
-      }
-    } catch (err: any) {
-      const e: AxiosError = err;
-      throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
+    this.allEvents = this.$store.allEvents;
+    dayjs.extend(customParseFormat);
+    this.events = this.allEvents.filter((event: Event): event is Event => {
+      return dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day');
+    });
+    this.allGroups = this.$store.allGroups;
+    this.groups = this.$store.allGroups;
+    this.allBaseDesigns = this.$store.allBaseDesigns;
+    this.baseDesigns = this.$store.allBaseDesigns;
   }
 
   @Emit('change-event')
