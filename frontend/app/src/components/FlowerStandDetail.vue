@@ -129,7 +129,7 @@ export default class FlowerStandDetail extends Vue {
   }
 
   get participatable(): boolean {
-    return dayjs(this.flowerStand.event.endDate, 'YYYY-MM-DD') < dayjs().startOf('day');
+    return dayjs(this.flowerStand.event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day');
   }
 
   mounted(): void {
