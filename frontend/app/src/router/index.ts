@@ -39,6 +39,11 @@ const routes: Array<RouteConfig> = [
     path: '/error',
     name: 'ErrorPage',
     component: () => import(/* webpackChunkName: "error" */ '../views/ErrorPage.vue')
+  },
+  {
+    path: '*',
+    name: 'Error404',
+    component: () => import(/* webpackChunkName: "error" */ '../views/Error404.vue')
   }
 ]
 
