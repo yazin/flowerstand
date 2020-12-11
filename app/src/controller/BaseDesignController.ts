@@ -10,8 +10,6 @@ import { IBaseDesign, IBaseDesignGetRequestParams } from '../interface/IBaseDesi
 export class BaseDesignController {
   @Get(':id')
   private async get(req: Request<IBaseDesignGetRequestParams, IBaseDesign, void, void>, res: Response<IBaseDesign>): Promise<Response<IBaseDesign>> {
-    Logger.Info(req.params, true);
-
     try {
       const repo: Repository<BaseDesign> = getRepository(BaseDesign);
       const design: BaseDesign | undefined = await repo.findOne(req.params.id, {relations: ['group']});
@@ -48,8 +46,6 @@ export class BaseDesignController {
 
   @Get('')
   private async getAll(req: Request<void, IBaseDesign[], void, void>, res:Response<IBaseDesign[]>): Promise<Response<IBaseDesign[]>> {
-    Logger.Info(req.params, true);
-
     try {
       const repo: Repository<BaseDesign> = getRepository(BaseDesign);
       const allDesigns: BaseDesign[] = await repo.find({relations: ['group']});

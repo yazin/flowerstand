@@ -32,8 +32,6 @@ import { SensitiveImageError } from '../lib/Errors';
 export class FlowerStandController {
   @Get(':id')
   private async get(req: Request<IFlowerStandGetRequestParams, FlowerStandResponse, void, void>, res: Response<FlowerStandResponse>): Promise<Response<FlowerStandResponse>> {
-    Logger.Info(req.params, true);
-
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand | undefined = await repo.findOne(req.params.id, {relations: ['participants', 'event', 'event.groups', 'baseDesign', 'baseDesign.group']});
@@ -51,8 +49,6 @@ export class FlowerStandController {
 
   @Get('')
   private async search(req: Request<void, FlowerStandResponse[], void, IFlowerStandSearchRequestQuery>, res: Response<FlowerStandResponse[]>): Promise<Response<FlowerStandResponse[]>> {
-    Logger.Info(req.query, true);
-
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
       const whereRaw: string[] = [];  // happy hackin'
@@ -267,9 +263,6 @@ export class FlowerStandController {
 
   @Put(':id')
   private async update(req: Request<IFlowerStandUpdateRequestParams, void, IFlowerStandUpdateRequestBody, void>, res: Response<void>): Promise<Response<void>> {
-    Logger.Info(req.params, true);
-    Logger.Info(req.body, true);
-
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand | undefined = await repo.findOne(req.params.id);
@@ -307,9 +300,6 @@ export class FlowerStandController {
 
   @Delete(':id')
   private async delete(req: Request<IFlowerStandDeleteRequestParams, void, void, IFlowerStandDeleteRequestQuery>, res: Response<void>): Promise<Response<void>> {
-    Logger.Info(req.params, true);
-    Logger.Info(req.query, true);
-
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand | undefined = await repo.findOne(req.params.id, {relations: ['participants']});

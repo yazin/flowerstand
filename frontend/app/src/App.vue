@@ -84,7 +84,7 @@
         </v-row>
         <v-row>
           <v-col dense cols="12" class="text-center">
-            This site is NOT officially sponsored or authorized by Project LoveLive! and it's related company, organization or person.
+            This site is NOT officially sponsored or authorized by Project LoveLive! and it's affiliates.
           </v-col>
         </v-row>
       </v-container>

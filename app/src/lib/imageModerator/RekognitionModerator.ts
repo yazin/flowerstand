@@ -23,9 +23,9 @@ export class RekognitionModerator implements IImageModerator {
     };
 
     const res: AWS.Rekognition.DetectModerationLabelsResponse = await rekognition.detectModerationLabels(params).promise();
-    Logger.Info(res, true);
     
     if (res.ModerationLabels && res.ModerationLabels.length > 0) {
+      Logger.Err(res, true);
       return false;
     }
 

@@ -35,7 +35,7 @@ export class FlowerStandImageGenerator {
 
     const res: AxiosResponse<ArrayBuffer> = await axios.get<ArrayBuffer>(baseDesignUrl, {responseType: 'arraybuffer', headers: {'Content-Type': 'image/png'}});
     if (res.status !== 200) {
-      throw new Error(`S3 respond ${res.status} for ${baseDesignUrl}`);
+      throw new Error(`Image storage server respond ${res.status} for ${baseDesignUrl}`);
     }
 
     const fromSvg: string = this.converter.createPresentFrom(presentFrom);

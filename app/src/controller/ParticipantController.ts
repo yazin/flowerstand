@@ -17,8 +17,6 @@ import {
 export class ParticipantController {
   @Get(':id')
   private async get(req: Request<IParticipantGetRequestParams, IParticipant, void, void>, res: Response<IParticipant>): Promise<Response<IParticipant>> {
-    Logger.Info(req.params, true);
-
     try {
       const repo: Repository<Participant> = getRepository(Participant);
       const participant: Participant | undefined = await repo.findOne(req.params.id);
@@ -48,8 +46,6 @@ export class ParticipantController {
 
   @Get('')
   private async getAll(req: Request<void, IParticipant[], void, IParticipantGetAllRequestQuery>, res: Response<IParticipant[]>): Promise<Response<IParticipant[]>> {
-    Logger.Info(req.query, true);
-
     if (!req.query.flowerStandId) {
       Logger.Info('ParticipantController#getAll called but no flower stand specified');
       return res.status(StatusCodes.BAD_REQUEST).json();
@@ -90,8 +86,6 @@ export class ParticipantController {
 
   @Post()
   private async add(req: Request<void, void, IParticipantAddRequestBody, void>, res: Response<void>): Promise<Response<void>> {
-    Logger.Info(req.body, true);
-
     try {
       const fsRepo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand | undefined = await fsRepo.findOne(req.body.flowerStandId);
@@ -135,9 +129,6 @@ export class ParticipantController {
 
   @Delete(':id')
   private async delete(req: Request<IParticipantDeleteRequestParams, void, void, IParticipantDeleteRequestQuery>, res: Response<void>): Promise<Response<void>> {
-    Logger.Info(req.params, true);
-    Logger.Info(req.query, true);
-
     try {
       const repo: Repository<Participant> = getRepository(Participant);
       const participant: Participant | undefined = await repo.findOne(req.params.id, {relations: ['flowerStand']});

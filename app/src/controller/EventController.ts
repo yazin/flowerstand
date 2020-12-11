@@ -12,8 +12,6 @@ import { IGroup } from '../interface/IGroup';
 export class EventController {
   @Get(':id')
   private async get(req: Request<IEventGetRequestParams, IEvent, void, void>, res: Response<IEvent>): Promise<Response<IEvent>> {
-    Logger.Info(req.params, true);
-
     try {
       const repo: Repository<Event> = getRepository(Event);
       const event: Event | undefined = await repo.findOne(req.params.id, {relations: ['groups']});
@@ -51,8 +49,6 @@ export class EventController {
 
   @Get('')
   private async getAll(req: Request<void, IEvent[], void, void>, res: Response<IEvent[]>): Promise<Response<IEvent[]>> {
-    Logger.Info(req.params, true);
-
     try {
       const repo: Repository<Event> = getRepository(Event);
       const events: Event[] = await repo.find({relations: ['groups']});
