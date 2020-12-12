@@ -203,6 +203,7 @@ export default class FlowerStandDetail extends Vue {
         this.checkAdminKey = false;
         this.loading = false;
         this.$router.push(`${this.nextPath}?adminKey=${this.adminKey}`);
+        return;
       }
     } catch (err: any) {
       this.adminKeyError = true;
