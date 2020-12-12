@@ -328,8 +328,7 @@ export class FlowerStandController {
   private generateAdminKey(): string {
     const letters: string = 'abcdefghijklmnopqrstuvwxyz';
     const numbers: string = '0123456789';
-    const symbols: string = '!#$%_+-^.=~/';
-    const allowedChars: string = letters + letters.toUpperCase() + numbers + symbols;
+    const allowedChars: string = letters + letters.toUpperCase() + numbers;
 
     let key: string = '';
     for (let i = 0; i < 8; i++) {
