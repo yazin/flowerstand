@@ -72,6 +72,8 @@ Noting to do.
   - Serverside API root URL. No trailing slash.
 - VUE_APP_ROOT_URL
   - Frontend root URL. No trailing slash.
+- VUE_APP_ROBOTS
+  - Value of `robots` meta element. `noindex,nofollow` for development/staging.
 
 ### S3 Bucket Setup
 
