@@ -187,12 +187,12 @@ export class FlowerStandController {
   private async add(req: Request<void, FlowerStandResponseWithKeys, IFlowerStandAddRequestBody, void>, res: Response<FlowerStandResponseWithKeys>): Promise<Response<FlowerStandResponseWithKeys>> {
     try {
       let remoteIp: string = '';
-      if (req.headers['X-Real-IP'] && typeof req.headers['X-Real-IP'] === 'string') {
-        remoteIp = req.headers['X-Real-IP'];
-      } else if (req.headers['X-Forwarded-For'] && typeof req.headers['X-Forwarded-For'] === 'string') {
-        remoteIp = req.headers['X-Forwarded-For'];
-      } else if (req.headers['X-Forwarded-For'] && Array.isArray(req.headers['X-Forwarded-For'])) {
-        remoteIp = req.headers['X-Forwarded-For'][0];
+      if (req.headers['x-real-ip'] && typeof req.headers['x-real-ip'] === 'string') {
+        remoteIp = req.headers['x-real-ip'];
+      } else if (req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] === 'string') {
+        remoteIp = req.headers['x-forwarded-for'];
+      } else if (req.headers['x-forwarded-for'] && Array.isArray(req.headers['x-forwarded-for'])) {
+        remoteIp = req.headers['x-forwarded-for'][0];
       } else if (req.connection.remoteAddress) {
         remoteIp = req.connection.remoteAddress;
       } else {
