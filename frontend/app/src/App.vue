@@ -73,6 +73,7 @@
     </v-app-bar>
 
     <v-main>
+      <v-alert dense type="info" v-if="!isProduction">これはテスト環境です</v-alert>
       <router-view/>
     </v-main>
     <v-footer>
@@ -98,6 +99,10 @@ import { Vue, Component } from 'vue-property-decorator';
 @Component
 export default class App extends Vue {
   drawer = false;
+
+  get isProduction(): boolean {
+    return process.env.VUE_APP_IS_PRODUCTION === '1';
+  }
 
   private onClickTitle(): void {
     this.$router.push('/');

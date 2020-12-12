@@ -74,6 +74,8 @@ Noting to do.
   - Frontend root URL. No trailing slash.
 - VUE_APP_ROBOTS
   - Value of `robots` meta element. `noindex,nofollow` for development/staging.
+- VUE_APP_IS_PRODUCTION
+  - Set 1 for production environment (!= production build).
 
 ### S3 Bucket Setup
 
