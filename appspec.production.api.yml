@@ -1,0 +1,13 @@
+version: 0.0
+os: linux
+files:
+  - source: /app
+    destination: /home/ec2-user/flowerstand
+    runas: ec2-user
+hooks:
+  BeforeInstall:
+    - location: deployment/before_install.sh
+      runas: ec2-user
+  ApplicationStart:
+    - location: deployment/application_start.sh
+      runas: ec2-user

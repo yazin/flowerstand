@@ -9,10 +9,6 @@ phases:
       - echo install packages for serverside...
       - cd app
       - npm isntall
-      - echo install packages for frontend...
-      - cd $DEFAULT
-      - cd frontend/app
-      - npm install
       - cd $DEFAULT
   build:
     commands:
@@ -20,13 +16,12 @@ phases:
       - echo build serverside...
       - cd app
       - npm run build
-      - echo build frontend...
       - cd $DEFAULT
-      - cd frontend/app
-      - npm run build:prod
-      - cd $DEFAULT
+      - mv deployment/before_install.production.api.sh deployment/before_install.sh
+      - mv deployment/application_start.production.api.sh deployment/application_start.sh
       - chmod +x deployment/before_install.sh
       - chmod +x deployment/application_start.sh
+      - mv appspec.production.api.yml appspec.yml
   post_build:
     commands:
       - echo build complete on `date`
@@ -38,7 +33,6 @@ artifacts:
     - app/ormconfig.js
     - app/package.json
     - app/package-lock.json
-    - frontend/app/dist/**/*
     - appspec.yml
     - deployment/before_install.sh
     - deployment/application_start.sh
