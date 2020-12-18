@@ -3,7 +3,6 @@ import { BaseDataSet } from './BaseDataSet';
 import { Participant } from './Participant';
 import { Event } from './Event';
 import { BaseDesign } from './BaseDesign';
-import { Group } from './Group';
 
 @Entity()
 export class FlowerStand extends BaseDataSet {

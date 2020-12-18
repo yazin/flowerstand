@@ -10,8 +10,6 @@ import { IGroup, IGroupGetRequestParams } from '../interface/IGroup';
 export class GroupController {
   @Get(':id')
   private async get(req: Request<IGroupGetRequestParams, IGroup, void, void>, res: Response<IGroup>): Promise<Response<IGroup>> {
-    Logger.Info(req.params, true);
-
     try {
       const repo: Repository<Group> = getRepository(Group);
       const group: Group | undefined = await repo.findOne(req.params.id);
@@ -35,8 +33,6 @@ export class GroupController {
 
   @Get('')
   private async getAll(req: Request<void, IGroup[], void, void>, res: Response<IGroup[]>): Promise<Response<IGroup[]>> {
-    Logger.Info(req.params, true);
-
     try {
       const repo: Repository<Group> = getRepository(Group);
       const groups: Group[] = await repo.find();

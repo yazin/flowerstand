@@ -11,6 +11,9 @@ export class BaseDesign extends BaseDataSet {
   @ManyToOne(type => Group, group => group.baseDesigns)
   group: Group;
 
+  @Column({nullable: true})
+  groupId?: number;
+
   @Column({length: 1024})
   imageUrl: string;
 

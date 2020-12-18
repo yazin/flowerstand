@@ -1,7 +1,7 @@
 version: '3'
 services:
   mysql:
-    image: mysql:8.0.21
+    build: ./mysql
     container_name: flowerstand_mysql
     env_file: ./mysql/mysql.env
     environment: 
@@ -11,37 +11,40 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./mysql/conf:/etc/mysql/conf.d/:ro
       - mysqldata:/var/lib/mysql
     networks:
       - flowerstand
   app:
-    image: node:12.18.4
+    build: ./app
     container_name: flowerstand_app
-    env_file: ./app/app.env
-    environment: 
-      TZ: Asia/Tokyo
     ports:
       - 3000:3000
     volumes:
       - ./app:/app
-    working_dir: /app
     command: npm run dev:watch
     networks:
       - flowerstand
     depends_on:
       - mysql
   web:
-    image: node:12.18.4-alpine
+    build: ./frontend/app
     container_name: flowerstand_web
-    environment:
-      TZ: Asia/Tokyo
     ports:
       - 8080:8080
     volumes:
       - ./frontend/app:/app
-    working_dir: /app
     command: npm run serve
+    networks:
+      - flowerstand
+    depends_on:
+      - app
+  nginx:
+    build: ./nginx
+    container_name: flowerstand_nginx
+    volumes:
+      - ./frontend/app/dist:/tmp/html
+    ports:
+      - 80:80
     networks:
       - flowerstand
     depends_on:

@@ -1,0 +1,33 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  pre_build:
+    commands:
+      - DEFAULT=`pwd`
+      - echo install packages for frontend...
+      - cd frontend/app
+      - npm install
+      - cd $DEFAULT
+  build:
+    commands:
+      - DEFAULT=`pwd`
+      - echo build frontend...
+      - cd frontend/app
+      - npm run build:prod
+      - cd $DEFAULT
+      - mv deployment/before_install.production.web.sh deployment/before_install.sh
+      - mv deployment/application_start.production.web.sh deployment/application_start.sh
+      - chmod +x deployment/before_install.sh
+      - chmod +x deployment/application_start.sh
+      - mv appspec.production.web.yml appspec.yml
+  post_build:
+    commands:
+      - echo build complete on `date`
+artifacts:
+  files:
+    - frontend/app/dist/**/*
+    - appspec.yml
+    - deployment/before_install.sh
+    - deployment/application_start.sh

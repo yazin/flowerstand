@@ -1,0 +1,38 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  pre_build:
+    commands:
+      - DEFAULT=`pwd`
+      - echo install packages for serverside...
+      - cd app
+      - npm isntall
+      - cd $DEFAULT
+  build:
+    commands:
+      - DEFAULT=`pwd`
+      - echo build serverside...
+      - cd app
+      - npm run build
+      - cd $DEFAULT
+      - mv deployment/before_install.production.api.sh deployment/before_install.sh
+      - mv deployment/application_start.production.api.sh deployment/application_start.sh
+      - chmod +x deployment/before_install.sh
+      - chmod +x deployment/application_start.sh
+      - mv appspec.production.api.yml appspec.yml
+  post_build:
+    commands:
+      - echo build complete on `date`
+artifacts:
+  files:
+    - app/dist/**/*
+    - app/resource/image/**/*
+    - app/node_modules/**/*
+    - app/ormconfig.js
+    - app/package.json
+    - app/package-lock.json
+    - appspec.yml
+    - deployment/before_install.sh
+    - deployment/application_start.sh

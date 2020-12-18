@@ -1,0 +1,78 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /frontend/app
+    schedule:
+      interval: daily
+      timezone: Asia/Tokyo
+      time: "19:00"
+    open-pull-requests-limit: 20
+    target-branch: "develop"
+    reviewers:
+      - yazin
+    ignore:
+      - dependency-name: "@types/node"
+        versions: [">12.x.x"]
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: daily
+      timezone: Asia/Tokyo
+      time: "19:00"
+    open-pull-requests-limit: 20
+    target-branch: develop
+    reviewers:
+      - yazin
+  - package-ecosystem: docker
+    directory: /mysql
+    schedule:
+      interval: weekly
+      day: friday
+      timezone: Asia/Tokyo
+      time: "19:00"
+    open-pull-requests-limit: 1
+    target-branch: develop
+    reviewers:
+      - yazin
+  - package-ecosystem: docker
+    directory: /app
+    schedule:
+      interval: weekly
+      day: friday
+      timezone: Asia/Tokyo
+      time: "19:00"
+    open-pull-requests-limit: 1
+    target-branch: develop
+    reviewers:
+      - yazin
+    ignore:
+      - dependency-name: node
+        versions: [">12.x.x"]
+  - package-ecosystem: docker
+    directory: /frontend/app
+    schedule:
+      interval: weekly
+      day: friday
+      timezone: Asia/Tokyo
+      time: "19:00"
+    open-pull-requests-limit: 1
+    target-branch: develop
+    reviewers:
+      - yazin
+    ignore:
+      - dependency-name: node
+        versions: [">12.x.x-alpine"]
+  - package-ecosystem: docker
+    directory: /nginx
+    schedule:
+      interval: weekly
+      day: friday
+      timezone: Asia/Tokyo
+      time: "19:00"
+    open-pull-requests-limit: 1
+    target-branch: develop
+    reviewers:
+      - yazin
+    ignore:
+      - dependency-name: nginx
+        versions: [">1.19.x-alpine"]

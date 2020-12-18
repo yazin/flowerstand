@@ -3,7 +3,7 @@ import { BaseDesign } from './BaseDesign';
 import { Participant } from './Participant';
 
 export interface FlowerStand {
-  id?: number;
+  id: number;
   name: string;
   presentTo: string;
   presentFrom: string;
@@ -17,15 +17,32 @@ export interface FlowerStand {
   baseDesign: BaseDesign;
 }
 
+export interface FlowerStandSearchRequestQuery {
+  baseDesignId?: number;
+  eventId?: number;
+  groupId?: number;
+  offset?: number;
+  limit?: number;
+  showPastEvents?: number;
+}
+
+export interface FlowerStandVerifyAdminKeyRequestBody {
+  flowerStandId: number;
+  adminKey: string;
+}
+
 export interface FlowerStandPreviewRequest {
   presentTo: string;
   presentFrom: string;
   baseDesignId: number;
+  eventId: number;
+  prefix: string;
   panel: string | ArrayBuffer | null;
 }
 
-export interface FlowerStandPreviewResponse {
+export interface IFlowerStandPreviewResponse {
   imageUrl: string;
+  isError: 0;
 }
 
 export interface FlowerStandCreateRequest {
@@ -37,10 +54,11 @@ export interface FlowerStandCreateRequest {
   organizerName: string;
   eventId: number;
   baseDesignId: number;
+  prefix: string;
   panel: string | ArrayBuffer | null;
 }
 
-export interface FlowerStandCreateResponse {
+export interface IFlowerStandCreateResponse {
   id: number;
   name: string;
   presentTo: string;
@@ -54,4 +72,21 @@ export interface FlowerStandCreateResponse {
   imageUrl: string;
   adminKey: string;
   participationCode: string;
+  isError: 0;
 }
+
+export interface FlowerStandUpdateRequest {
+  adminKey: string;
+  name: string;
+  organizerName: string;
+  description: string;
+  projectUrl: string;
+}
+
+export interface IFlowerStandError {
+  isError: 1;
+  errorType: string;
+}
+
+export type FlowerStandCreateResponse = IFlowerStandCreateResponse | IFlowerStandError;
+export type FlowerStandPreviewResponse = IFlowerStandPreviewResponse | IFlowerStandError;

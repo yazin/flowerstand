@@ -9,11 +9,12 @@ import { Event } from '../entity/Event';
 import { Group } from '../entity/Group';
 import { Participant } from '../entity/Participant';
 import { 
-  IFlowerStand,
-  IFlowerStandWithKeys,
-  IFlowerStandPreview,
+  FlowerStandResponse,
+  FlowerStandResponseWithKeys,
+  FlowerStandPreviewResponse,
   IFlowerStandGetRequestParams,
   IFlowerStandSearchRequestQuery,
+  IFlowerStandVerifyAdminKeyRequestBody,
   IFlowerStandPreviewRequestBody,
   IFlowerStandAddRequestBody,
   IFlowerStandUpdateRequestParams,
@@ -22,13 +23,15 @@ import {
   IFlowerStandDeleteRequestQuery } from '../interface/IFlowerStand';
 import { IParticipant } from '../interface/IParticipant';
 import { IGroup } from '../interface/IGroup';
+import { FlowerStandImageGenerator, IPanelData } from '../lib/imageGenerator/FlowerStandImageGenerator';
+import container from '../inversify.config';
+import Types from '../lib/Types';
+import { SensitiveImageError } from '../lib/Errors';
 
 @Controller('api/flowerstands')
 export class FlowerStandController {
   @Get(':id')
-  private async get(req: Request<IFlowerStandGetRequestParams, IFlowerStand, void, void>, res: Response<IFlowerStand>): Promise<Response<IFlowerStand>> {
-    Logger.Info(req.params, true);
-
+  private async get(req: Request<IFlowerStandGetRequestParams, FlowerStandResponse, void, void>, res: Response<FlowerStandResponse>): Promise<Response<FlowerStandResponse>> {
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand | undefined = await repo.findOne(req.params.id, {relations: ['participants', 'event', 'event.groups', 'baseDesign', 'baseDesign.group']});
@@ -36,7 +39,7 @@ export class FlowerStandController {
         return res.status(StatusCodes.NO_CONTENT).json();
       }
 
-      const ret: IFlowerStand = this.toInterface(flowerStand);
+      const ret: FlowerStandResponse = this.toResponse(flowerStand);
       return res.status(StatusCodes.OK).json(ret);
     } catch (err: any) {
       Logger.Err(err);
@@ -45,22 +48,67 @@ export class FlowerStandController {
   }
 
   @Get('')
-  private async search(req: Request<void, IFlowerStand[], void, IFlowerStandSearchRequestQuery>, res: Response<IFlowerStand[]>): Promise<Response<IFlowerStand[]>> {
-    Logger.Info(req.params, true);
-
+  private async search(req: Request<void, FlowerStandResponse[], void, IFlowerStandSearchRequestQuery>, res: Response<FlowerStandResponse[]>): Promise<Response<FlowerStandResponse[]>> {
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
-      let where = {};
-      if (req.query.baseDesignId && req.query.eventId) {
-        where = {baseDesignId: req.query.baseDesignId, eventId: req.query.eventId};
+      const whereRaw: string[] = [];  // happy hackin'
+
+      const isValidNumber = (x: unknown): boolean => {
+        return Number.isInteger(Number(x)) && Number(x) >= 0;
+      };
+
+      if (req.query.baseDesignId && !isValidNumber(req.query.baseDesignId)) {
+        Logger.Err(`invalid baseDesignId ${req.query.baseDesignId}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
       } else if (req.query.baseDesignId) {
-        where = {baseDesignId: req.query.baseDesignId};
-      } else if (req.query.eventId) {
-        where = {eventId: req.query.eventId};
+        whereRaw.push(`FlowerStand__baseDesign.id = ${req.query.baseDesignId}`);
       }
-      const flowerStands: FlowerStand[] = await repo.find({where: where, relations: ['participants', 'event', 'event.groups', 'baseDesign', 'baseDesign.group']});
-      const ret: IFlowerStand[] = flowerStands.map((flowerStand: FlowerStand): IFlowerStand => {
-        return this.toInterface(flowerStand);
+
+      if (req.query.eventId && !isValidNumber(req.query.eventId)) {
+        Logger.Err(`invalid eventId ${req.query.eventId}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      } else if (req.query.eventId) {
+        whereRaw.push(`FlowerStand__event.id = ${req.query.eventId}`);
+      }
+
+      if (req.query.groupId && !isValidNumber(req.query.groupId)) {
+        Logger.Err(`invalid groupId ${req.query.groupId}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      } else if (req.query.groupId) {
+        whereRaw.push(`FlowerStand__baseDesign__group.id = ${req.query.groupId}`);
+      }
+
+      if (req.query.showPastEvents == 0) {
+        const formatter: Intl.NumberFormat = new Intl.NumberFormat('ja', {minimumIntegerDigits: 2});
+        const now: Date = new Date();
+        const nowStr: string = `${now.getFullYear()}-${formatter.format(now.getMonth() + 1)}-${formatter.format(now.getDate())}`;
+        whereRaw.push(`FlowerStand__event.endDate >= '${nowStr}'`);
+      }
+
+      if (req.query.offset && !isValidNumber(req.query.offset)) {
+        Logger.Err(`invalid offset ${req.query.offset}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      }
+
+      if (req.query.limit && !isValidNumber(req.query.limit)) {
+        Logger.Err(`invalid limit ${req.query.limit}`);
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      }
+
+      if (req.query.offset && !req.query.limit) {
+        Logger.Err('offset specified but limit not specified');
+        return res.status(StatusCodes.BAD_REQUEST).json();
+      }
+
+      let flowerStands: FlowerStand[] = await repo.find({
+        where: whereRaw.join(' and '),
+        relations: ['participants', 'event', 'event.groups', 'baseDesign', 'baseDesign.group'],
+        skip: req.query.offset ? req.query.offset : undefined,
+        take: req.query.limit ? req.query.limit : undefined,
+        order: {id: 'DESC'}});
+
+      const ret: FlowerStandResponse[] = flowerStands.map((flowerStand: FlowerStand): FlowerStandResponse => {
+        return this.toResponse(flowerStand);
       }, this);
       return res.status(StatusCodes.OK).json(ret);
     } catch (err: any) {
@@ -69,54 +117,31 @@ export class FlowerStandController {
     }
   }
 
-  @Post('preview')
-  private async preview(req: Request<void, IFlowerStandPreview, IFlowerStandPreviewRequestBody, void>, res: Response<IFlowerStandPreview>): Promise<Response<IFlowerStandPreview>> {
-    //Logger.Info(req.body, true);
-
+  @Post('verify')
+  private async verifyAdminKey(req: Request<void, void, IFlowerStandVerifyAdminKeyRequestBody, void>, res:Response<void>): Promise<Response<void>> {
     try {
-      if (req.body.panel) {
-        const panel: Buffer = Buffer.from(req.body.panel.replace(/^data:\w+\/\w+;base64,/, ''), 'base64');
-        const ext: string = req.body.panel.slice(req.body.panel.indexOf('/') + 1, req.body.panel.indexOf(';'));
-        const contentType: string = req.body.panel.slice(req.body.panel.indexOf(':') + 1, req.body.panel.indexOf(';'));
-  
-        Logger.Info(ext);
-        Logger.Info(contentType);
-      }
-
-      const repo: Repository<BaseDesign> = getRepository(BaseDesign);
-      const baseDesign = await repo.findOne(req.body.baseDesignId);
-      if (!baseDesign) {
+      const repo: Repository<FlowerStand> = getRepository(FlowerStand);
+      const flowerStand: FlowerStand | undefined = await repo.findOne(req.body.flowerStandId);
+      if (!flowerStand) {
         return res.status(StatusCodes.NO_CONTENT).json();
       }
 
-      // TODO: generate preview image
-
-      // FIXME: mock
-      return res.status(StatusCodes.OK).json({imageUrl: baseDesign.imageUrl});
+      if (flowerStand.adminKey === req.body.adminKey) {
+        return res.status(StatusCodes.OK).json();
+      } else {
+        return res.status(StatusCodes.UNAUTHORIZED).json();
+      }
     } catch (err: any) {
       Logger.Err(err);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
     }
   }
 
-  @Post()
-  private async add(req: Request<void, IFlowerStandWithKeys, IFlowerStandAddRequestBody, void>, res: Response<IFlowerStandWithKeys>): Promise<Response<IFlowerStandWithKeys>> {
-    Logger.Info(req.body, true);
-
+  @Post('preview')
+  private async preview(req: Request<void, FlowerStandPreviewResponse, IFlowerStandPreviewRequestBody, void>, res: Response<FlowerStandPreviewResponse>): Promise<Response<FlowerStandPreviewResponse>> {
     try {
-      let remoteIp: string = '';
-      if (typeof req.headers['x-forwarded-for'] === 'string') {
-        remoteIp = req.headers['x-forwarded-for'];
-      } else if (req.connection.remoteAddress) {
-        remoteIp = req.connection.remoteAddress;
-      } else {
-        Logger.Warn('remote ip address unknown');
-        remoteIp = 'UNKNOWN';
-      }
-      remoteIp = remoteIp.replace(/^.*:/, '');
-
-      const designRepo: Repository<BaseDesign> = getRepository(BaseDesign);
-      const baseDesign: BaseDesign | undefined = await designRepo.findOne(req.body.baseDesignId);
+      const repo: Repository<BaseDesign> = getRepository(BaseDesign);
+      const baseDesign = await repo.findOne(req.body.baseDesignId);
       if (!baseDesign) {
         return res.status(StatusCodes.NO_CONTENT).json();
       }
@@ -127,15 +152,92 @@ export class FlowerStandController {
         return res.status(StatusCodes.NO_CONTENT).json();
       }
 
+      let panel: IPanelData | null = null;
       if (req.body.panel) {
-        const panel: Buffer = Buffer.from(req.body.panel.replace(/^data:\w+\/\w+;base64,/, ''), 'base64');
-        const ext: string = req.body.panel.slice(req.body.panel.indexOf('/') + 1, req.body.panel.indexOf(';'));
-        const contentType: string = req.body.panel.slice(req.body.panel.indexOf(':') + 1, req.body.panel.indexOf(';'));
+        const encodedData = req.body.panel;
+        const filedata = encodedData.replace(/^data:\w+\/\w+;base64,/, '');
+        const decodedData = Buffer.from(filedata, 'base64');
+        panel = {
+          data: decodedData,
+          ext: req.body.panel.slice(req.body.panel.indexOf('/') + 1, req.body.panel.indexOf(';')),
+          contentType: req.body.panel.slice(req.body.panel.indexOf(':') + 1, req.body.panel.indexOf(';'))
+        }
       }
 
-      // TODO: generate image
-      const imageUrl: string = baseDesign.imageUrl;
+      try {
+        const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
+        const imageUrl: string = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.prefix, req.body.presentTo, req.body.presentFrom, event.name, panel, true);
 
+        return res.status(StatusCodes.OK).json({imageUrl: imageUrl, isError: 0});
+      } catch (err: any) {
+        if (err instanceof SensitiveImageError) {
+          Logger.Err('sensitive image detected');
+          return res.status(StatusCodes.BAD_REQUEST).json({errorType: 'SENSITIVE_IMAGE', isError: 1});
+        } else {
+          throw err;
+        }
+      }
+    } catch (err: any) {
+      Logger.Err(err);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
+    }
+  }
+
+  @Post()
+  private async add(req: Request<void, FlowerStandResponseWithKeys, IFlowerStandAddRequestBody, void>, res: Response<FlowerStandResponseWithKeys>): Promise<Response<FlowerStandResponseWithKeys>> {
+    try {
+      let remoteIp: string = '';
+      if (req.headers['x-real-ip'] && typeof req.headers['x-real-ip'] === 'string') {
+        remoteIp = req.headers['x-real-ip'];
+      } else if (req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] === 'string') {
+        remoteIp = req.headers['x-forwarded-for'];
+      } else if (req.headers['x-forwarded-for'] && Array.isArray(req.headers['x-forwarded-for'])) {
+        remoteIp = req.headers['x-forwarded-for'][0];
+      } else if (req.connection.remoteAddress) {
+        remoteIp = req.connection.remoteAddress;
+      } else {
+        Logger.Warn('remote ip address unknown');
+        remoteIp = 'UNKNOWN';
+      }
+      remoteIp = remoteIp.replace(/^.*:/, '');
+
+      const designRepo: Repository<BaseDesign> = getRepository(BaseDesign);
+      const baseDesign: BaseDesign | undefined = await designRepo.findOne(req.body.baseDesignId, {relations: ['group']});
+      if (!baseDesign) {
+        return res.status(StatusCodes.NO_CONTENT).json();
+      }
+
+      const eventRepo: Repository<Event> = getRepository(Event);
+      const event: Event | undefined = await eventRepo.findOne(req.body.eventId);
+      if (!event) {
+        return res.status(StatusCodes.NO_CONTENT).json();
+      }
+
+      let panel: IPanelData | null = null;
+      if (req.body.panel) {
+        const encodedData = req.body.panel;
+        const filedata = encodedData.replace(/^data:\w+\/\w+;base64,/, '');
+        const decodedData = Buffer.from(filedata, 'base64');
+        panel = {
+          data: decodedData,
+          ext: req.body.panel.slice(req.body.panel.indexOf('/') + 1, req.body.panel.indexOf(';')),
+          contentType: req.body.panel.slice(req.body.panel.indexOf(':') + 1, req.body.panel.indexOf(';'))
+        }
+      }
+
+      const generator: FlowerStandImageGenerator = container.get<FlowerStandImageGenerator>(Types.FlowerStandImageGenerator);
+      let imageUrl: string = '';
+      try {
+        imageUrl = await generator.generateFlowerStandImage(baseDesign.imageUrl, req.body.prefix, req.body.presentTo, req.body.presentFrom, event.name, panel, false);
+      } catch (err: any) {
+        if (err instanceof SensitiveImageError) {
+          Logger.Err('sensitive image detected');
+          return res.status(StatusCodes.BAD_REQUEST).json({errorType: 'SENSITIVE_IMAGE', isError: 1});
+        } else {
+          throw err;
+        }
+      }
+    
       const fsRepo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand = new FlowerStand(req.body.name, req.body.presentTo, req.body.presentFrom, event, req.body.organizerName, remoteIp, this.generateAdminKey(), this.generateParticipationCode(), baseDesign, imageUrl);
       flowerStand.description = req.body.description;
@@ -145,9 +247,14 @@ export class FlowerStandController {
         Logger.Err('flower stand id not defined, should not reach here');
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
       }
-
-      const ret: IFlowerStandWithKeys = this.toInterfaceWithKeys(newStand);
-      return res.status(StatusCodes.OK).json(ret);
+      try {
+        const ret: FlowerStandResponseWithKeys = this.toResponseWithKeys(newStand);
+        return res.status(StatusCodes.OK).json(ret);
+      } catch (err) {
+        Logger.Err(err);
+        await fsRepo.remove(newStand);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
+      }
     } catch (err: any) {
       Logger.Err(err);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json();
@@ -156,9 +263,6 @@ export class FlowerStandController {
 
   @Put(':id')
   private async update(req: Request<IFlowerStandUpdateRequestParams, void, IFlowerStandUpdateRequestBody, void>, res: Response<void>): Promise<Response<void>> {
-    Logger.Info(req.params, true);
-    Logger.Info(req.body, true);
-
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand | undefined = await repo.findOne(req.params.id);
@@ -172,14 +276,6 @@ export class FlowerStandController {
 
       if (req.body.name) {
         flowerStand.name = req.body.name;
-      }
-
-      if (req.body.presentTo) {
-        flowerStand.presentTo = req.body.presentTo;
-      }
-
-      if (req.body.presentFrom) {
-        flowerStand.presentFrom = req.body.presentFrom;
       }
 
       if (req.body.organizerName) {
@@ -204,9 +300,6 @@ export class FlowerStandController {
 
   @Delete(':id')
   private async delete(req: Request<IFlowerStandDeleteRequestParams, void, void, IFlowerStandDeleteRequestQuery>, res: Response<void>): Promise<Response<void>> {
-    Logger.Info(req.params, true);
-    Logger.Info(req.query, true);
-
     try {
       const repo: Repository<FlowerStand> = getRepository(FlowerStand);
       const flowerStand: FlowerStand | undefined = await repo.findOne(req.params.id, {relations: ['participants']});
@@ -235,8 +328,7 @@ export class FlowerStandController {
   private generateAdminKey(): string {
     const letters: string = 'abcdefghijklmnopqrstuvwxyz';
     const numbers: string = '0123456789';
-    const symbols: string = '!#$%_+-^.=~/';
-    const allowedChars: string = letters + letters.toUpperCase() + numbers + symbols;
+    const allowedChars: string = letters + letters.toUpperCase() + numbers;
 
     let key: string = '';
     for (let i = 0; i < 8; i++) {
@@ -263,7 +355,7 @@ export class FlowerStandController {
     return codes.join('-');
   }
 
-  private toInterface(flowerStand: FlowerStand): IFlowerStand {
+  private toResponse(flowerStand: FlowerStand): FlowerStandResponse {
     if (!flowerStand.id) {
       throw 'flower stand id not defined, should not reach here';
     }
@@ -330,12 +422,17 @@ export class FlowerStandController {
           name: flowerStand.baseDesign.group.name
         }
       },
-      imageUrl: flowerStand.imageUrl
+      imageUrl: flowerStand.imageUrl,
+      isError: 0
     };
   }
 
-  private toInterfaceWithKeys(flowerStand: FlowerStand): IFlowerStandWithKeys {
-    const base: IFlowerStand = this.toInterface(flowerStand);
-    return {adminKey: flowerStand.adminKey, participationCode: flowerStand.participationCode, ...base}
+  private toResponseWithKeys(flowerStand: FlowerStand): FlowerStandResponseWithKeys {
+    const base: FlowerStandResponse = this.toResponse(flowerStand);
+    if (base.isError === 0) {
+      return {adminKey: flowerStand.adminKey, participationCode: flowerStand.participationCode, ...base};
+    } else {
+      return {isError: 1, errorType: 'unknown, should not reach here'};
+    }
   }
 }

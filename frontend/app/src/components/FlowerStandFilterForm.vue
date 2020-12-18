@@ -6,7 +6,7 @@
         <v-form>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="12" md="6" lg="4">
+              <v-col cols="12" sm="12" md="6" lg="3">
                 <v-select
                   dense
                   clearable
@@ -18,7 +18,7 @@
                   @change="onChangeEvent"
                   label="イベント"/>
               </v-col>
-              <v-col cols="12" sm="12" md="6" lg="4">
+              <v-col cols="12" sm="12" md="6" lg="3">
                 <v-select
                   dense
                   clearable
@@ -30,7 +30,7 @@
                   @change="onChangeGroup"
                   label="グループ"/>
               </v-col>
-              <v-col cols="12" sm="12" md="6" lg="4">
+              <v-col cols="12" sm="12" md="6" lg="3">
                 <v-select
                   dense
                   clearable
@@ -42,6 +42,9 @@
                   @change="onChangeBaseDesign"
                   label="宛先"/>
               </v-col>
+              <v-col cols="12" sm="12" md="6" lg="3">
+                <v-checkbox v-model="showPastEvents" @change="onChangeShowPastEvent" label="終了したイベントを表示する"/>
+              </v-col>
             </v-row>
           </v-container>
         </v-form>
@@ -52,15 +55,18 @@
 
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator';
-import axios, { AxiosResponse } from 'axios';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Event } from '../models/Event';
 import { Group } from '../models/Group';
 import { BaseDesign } from '../models/BaseDesign';
+import { LoadMasterDataResult } from '../plugins/store';
 
 export interface FilterCondition {
   event: number | null;
   group: number | null;
   baseDesign: number | null;
+  showPastEvent: boolean;
 }
 
 @Component
@@ -78,41 +84,36 @@ export default class FlowerStandFilterForm extends Vue {
   private allGroups: Group[] = [];
   private allBaseDesigns: BaseDesign[] = [];
 
-  async mounted() {
-    const events: AxiosResponse<Event[]> = await axios.get<Event[]>(`${process.env.VUE_APP_API_URL}/events`);
-    if (events.status === 200) {
-      this.events = events.data;
-      this.allEvents = events.data;
-    } else {
-      throw new Error(`データ取得に失敗しました code:${events.status}`);
-    }
+  showPastEvents = false;
 
-    const groups: AxiosResponse<Group[]> = await axios.get<Group[]>(`${process.env.VUE_APP_API_URL}/groups`);
-    if (groups.status === 200) {
-      this.groups = groups.data;
-      this.allGroups = groups.data;
-    } else {
-      throw new Error(`データ取得に失敗しました code:${events.status}`);
+  async created(): Promise<void>  {
+    if (!this.$store.isLoaded) {
+      const res: LoadMasterDataResult = await this.$store.loadMasterData();
+      if (res.isError) {
+        throw new Error(res.errorText);
+      }
     }
-
-    const baseDesigns: AxiosResponse<BaseDesign[]> = await axios.get<BaseDesign[]>(`${process.env.VUE_APP_API_URL}/basedesigns`);
-    if (baseDesigns.status === 200) {
-      this.baseDesigns = baseDesigns.data;
-      this.allBaseDesigns = baseDesigns.data;
-    } else {
-      throw new Error(`データ取得に失敗しました code:${events.status}`);
-    }
+    this.allEvents = this.$store.allEvents;
+    dayjs.extend(customParseFormat);
+    this.events = this.allEvents.filter((event: Event): event is Event => {
+      return dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day');
+    });
+    this.allGroups = this.$store.allGroups;
+    this.groups = this.$store.allGroups;
+    this.allBaseDesigns = this.$store.allBaseDesigns;
+    this.baseDesigns = this.$store.allBaseDesigns;
   }
 
   @Emit('change-event')
-  onChangeEvent(): FilterCondition {
+  private onChangeEvent(): FilterCondition {
     if (!this.event) {
       this.groups = this.allGroups;
       this.baseDesigns = this.allBaseDesigns;
       return {
         event: null,
         group: this.group ? this.group.id : null,
-        baseDesign: this.baseDesign ? this.baseDesign.id : null
+        baseDesign: this.baseDesign ? this.baseDesign.id : null,
+        showPastEvent: this.showPastEvents
       };
     }
     const groupIds: number[] = this.event.groups.map((group: Group): number => group.id);
@@ -135,19 +136,21 @@ export default class FlowerStandFilterForm extends Vue {
     return {
       event: this.event ? this.event.id : null,
       group: this.group ? this.group.id : null,
-      baseDesign: this.baseDesign ? this.baseDesign.id : null
+      baseDesign: this.baseDesign ? this.baseDesign.id : null,
+      showPastEvent: this.showPastEvents
     };
   }
 
   @Emit('change-group')
-  onChangeGroup(): FilterCondition {
+  private onChangeGroup(): FilterCondition {
     if (!this.group) {
       this.events = this.allEvents;
       this.baseDesigns = this.allBaseDesigns;
       return {
         event: this.event ? this.event.id : null,
         group: null,
-        baseDesign: this.baseDesign ? this.baseDesign.id : null
+        baseDesign: this.baseDesign ? this.baseDesign.id : null,
+        showPastEvent: this.showPastEvents
       };
     }
     const groupId = this.group.id;
@@ -169,19 +172,21 @@ export default class FlowerStandFilterForm extends Vue {
     return {
       event: this.event ? this.event.id : null,
       group: this.group ? this.group.id : null,
-      baseDesign: this.baseDesign ? this.baseDesign.id : null
+      baseDesign: this.baseDesign ? this.baseDesign.id : null,
+      showPastEvent: this.showPastEvents
     };
   }
 
   @Emit('change-design')
-  onChangeBaseDesign(): FilterCondition {
+  private onChangeBaseDesign(): FilterCondition {
     if (!this.baseDesign) {
       this.events = this.allEvents;
       this.groups = this.allGroups;
       return {
         event: this.event ? this.event.id : null,
         group: this.group ? this.group.id : null,
-        baseDesign: null
+        baseDesign: null,
+        showPastEvent: this.showPastEvents
       };
     }
     const groupId = this.baseDesign.group.id;
@@ -203,7 +208,28 @@ export default class FlowerStandFilterForm extends Vue {
     return {
       event: this.event ? this.event.id : null,
       group: this.group ? this.group.id : null,
-      baseDesign: this.baseDesign ? this.baseDesign.id : null
+      baseDesign: this.baseDesign ? this.baseDesign.id : null,
+      showPastEvent: this.showPastEvents
+    };
+  }
+
+  @Emit('change-show-past-events')
+  onChangeShowPastEvent(): FilterCondition {
+    this.events = this.allEvents.filter((event: Event): event is Event => {
+      if (this.showPastEvents) {
+        return true;
+      } else {
+        this.event = null;
+        this.group = null;
+        this.baseDesign = null;
+        return dayjs(event.endDate, 'YYYY-MM-DD') >= dayjs().startOf('day');
+      }
+    }, this);
+    return {
+      event: this.event ? this.event.id : null,
+      group: this.group ? this.group.id : null,
+      baseDesign: this.baseDesign ? this.baseDesign.id : null,
+      showPastEvent: this.showPastEvents
     };
   }
 }

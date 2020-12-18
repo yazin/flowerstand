@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="300">
+  <v-card max-width="300" class="mx-auto pt-2">
     <v-img v-bind:src="flowerStand.imageUrl"></v-img>
     <v-card-title>{{flowerStand.name}}</v-card-title>
     <v-card-subtitle>{{flowerStand.organizerName}}</v-card-subtitle>
@@ -8,7 +8,7 @@
       {{flowerStand.description}}
     </v-card-text>
     <v-card-actions>
-      <v-btn class="ma-2" color="primary" dark :to="`/detail/${flowerStand.id}`"><v-icon dark light>mdi-eye</v-icon>このフラスタを見る</v-btn>
+      <v-btn class="ma-2" color="primary" dark :to="`/detail/${flowerStand.id}`"><v-icon dark>mdi-eye</v-icon>このフラスタを見る</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -18,7 +18,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { FlowerStand } from '../models/FlowerStand';
 
 @Component
-export default class FlowerStandItem extends Vue {
+export default class FlowerStandListItem extends Vue {
   @Prop() private readonly flowerStand!: FlowerStand;
 }
 </script>
