@@ -7,9 +7,9 @@ info:
   license:
     name: MIT
     url: http://opensource.org/licenses/MIT
-  version: 0.0.4
+  version: 1.0.0
 servers:
-- url: http://localhost:3000/api
+- url: https://flowerstand.schoolidol.club/api
 paths:
   /flowerstands:
     get:
@@ -50,6 +50,14 @@ paths:
         explode: true
         schema:
           type: integer
+      - name: showPastEvents
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          description: 0 if limit search result to present and future event, 1 otherwise.
       responses:
         "200":
           description: OK
@@ -78,6 +86,8 @@ paths:
                 $ref: '#/components/schemas/FlowerStandWithKeys'
         "204":
           description: baseDesignId or eventId does not exists.
+        "400":
+          description: possibly posted image contains sensitive contents.
   /flowerstands/verify:
     post:
       summary: verify admin key.
@@ -112,6 +122,8 @@ paths:
                 $ref: '#/components/schemas/inline_response_200'
         "204":
           description: baseDesignId or eventId does not exists.
+        "400":
+          description: possibly posted image contains sensitive contents.
   /flowerstands/{id}:
     get:
       summary: returns a flower stand.
@@ -320,6 +332,8 @@ paths:
           description: flower stand with specified id does not exists.
         "401":
           description: invalid participationCode.
+        "403":
+          description: max number of participants (100) exceeded.
   /participants/{id}:
     get:
       summary: returns a participant.
@@ -514,8 +528,10 @@ components:
       properties:
         flowerStandId:
           type: integer
+          description: flower stand id to verify.
         adminKey:
           type: string
+          description: adminKey to verify.
     body_2:
       required:
       - baseDesignId
@@ -576,15 +592,22 @@ components:
       properties:
         name:
           type: string
+          description: participant name.
         flowerStandId:
           type: integer
+          description: flower stand id to participate.
         participationCode:
           type: string
+          description: participation code of flowerstand.
         twitterId:
           type: string
+          description: Twitter id. no leading @.
         instagramId:
           type: string
+          description: Instagram id. no leading @.
         facebookId:
           type: string
+          description: Facebook id. no leading @.
         mastodonId:
           type: string
+          description: Mastodon id. no leading @. ${username}@${host} format.
