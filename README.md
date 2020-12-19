@@ -226,7 +226,7 @@ Frontend may not working correctly on some old browsers. I have no plan to suppo
 
 ## API Spec
 
-[available on SwaggerHub](https://app.swaggerhub.com/apis/yazin/flowerstand/)
+[available on SwaggerHub](https://app.swaggerhub.com/apis-docs/yazin/flowerstand/1.0.0)
 
 ## Batch
 
