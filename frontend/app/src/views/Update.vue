@@ -75,7 +75,11 @@ export default class Update extends Vue {
       this.flowerStand = res.data;
     } catch (err) {
       const e: AxiosError<FlowerStand> = err;
-      this.onError(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        this.onError(`データ取得に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
     }
   }
 
@@ -96,7 +100,12 @@ export default class Update extends Vue {
       this.$router.push({name: 'Detail', params: {id: this.flowerStand.id.toString()}, query: {from: 'update'}});
     } catch (err) {
       const e: AxiosError<void> = err;
-      this.onError(`データ更新に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        this.onError(`データ更新に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
+
     }
   }
 
@@ -110,7 +119,11 @@ export default class Update extends Vue {
       this.$router.push(`/`);
     } catch (err: any) {
       const e: AxiosError<void> = err;
-      this.onError(`データ削除に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        this.onError(`データ削除に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
     }
   }
 }

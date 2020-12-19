@@ -83,7 +83,11 @@ export default class Detail extends Vue {
       this.flowerStand = res.data;
     } catch (err: any) {
       const e: AxiosError<FlowerStand> = err;
-      this.onError(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        this.onError(`データ取得に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
     }
   }
 }

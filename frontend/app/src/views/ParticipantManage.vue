@@ -87,7 +87,11 @@ export default class ParticipantManage extends Vue {
       this.progress = false;
     } catch (err: any) {
       const e: AxiosError<FlowerStand> = err;
-      this.onError(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        this.onError(`データ取得に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
     }
   }
 
@@ -103,7 +107,11 @@ export default class ParticipantManage extends Vue {
       }
     } catch (err: any) {
       const e: AxiosError<void> = err;
-      this.onError(`参加者の削除に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        this.onError(`参加者の削除に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
       return;
     }
 
@@ -116,7 +124,11 @@ export default class ParticipantManage extends Vue {
       this.flowerStand.participants = res.data;
     } catch (err: any) {
       const e: AxiosError<Participant[]> = err;
-      this.onError(`参加者情報の取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        this.onError(`参加者情報の取得に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
     }
   }
 }
