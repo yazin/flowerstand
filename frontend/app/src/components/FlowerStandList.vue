@@ -82,7 +82,11 @@ export default class FlowerStandList extends Vue {
       }
     } catch (err: any) {
       const e: AxiosError<FlowerStand[]> = err;
-      throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        throw new Error(`データ取得に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
     }
   }
 
@@ -137,7 +141,11 @@ export default class FlowerStandList extends Vue {
       }
     } catch (err: any) {
       const e: AxiosError<FlowerStand[]> = err;
-      throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        throw new Error(`データ取得に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
     }
   }
 
@@ -174,7 +182,11 @@ export default class FlowerStandList extends Vue {
       }
     } catch (err: any) {
       const e: AxiosError<FlowerStand[]> = err;
-      throw new Error(`データ取得に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+      if (e.response) {
+        throw new Error(`データ取得に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
+      }
     }
   }
 }

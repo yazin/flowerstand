@@ -45,13 +45,13 @@ export default class Participate extends Vue {
       const e: AxiosError<void> = err;
       if (e.response && e.response.status === 401) {
         this.onError('参加コードが無効です');
-        return;
-      }
-      if (e.response && e.response.status === 403) {
+      } else if (e.response && e.response.status === 403) {
         this.onError('参加者が上限に達しています');
-        return;
+      } else if (e.response) {
+        this.onError(`参加に失敗しました code:${e.response.status}`);
+      } else {
+        this.$router.push('/error');
       }
-      this.onError(`参加に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
     }
   }
 

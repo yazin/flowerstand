@@ -418,8 +418,10 @@ export default class FlowerStandCreateForm extends Vue {
       const e: AxiosError = err;
       if (e.response && e.response.data.isError === 1 && e.response.data.errorType === 'SENSITIVE_IMAGE') {
         this.$emit('error', `画像に不適切な要素が含まれています code:${e.response.status}`);
+      } else if (e.response) {
+        this.$emit('error', `プレビュー生成に失敗しました code:${e.response.status}`);
       } else {
-        this.$emit('error', `プレビュー生成に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+        this.$router.push('/error');
       }
     }
   }

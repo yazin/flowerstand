@@ -135,9 +135,11 @@ export default class Create extends Vue {
     } catch (err: any) {
       const e: AxiosError<FlowerStandCreateResponse> = err;
       if (e.response && e.response.data.isError && e.response.data.errorType === 'SENSITIVE_IMAGE') {
-        this.onError(`画像に不適切な要素が含まれています code:${e.response ? e.response.status : 'unknown'}`);
+        this.onError(`画像に不適切な要素が含まれています code:${e.response.status}`);
+      } else if (e.response) {
+        this.onError(`フラワースタンド作成に失敗しました code:${e.response.status}`);
       } else {
-        this.onError(`フラワースタンド作成に失敗しました code:${e.response ? e.response.status : 'unknown'}`);
+        this.$router.push('/error');
       }
       return;
     }
@@ -157,8 +159,12 @@ export default class Create extends Vue {
         }
       } catch (err: any) {
         const e: AxiosError<void> = err;
-        this.resultTitle = '参加失敗';
-        this.resultText = `フラワースタンドを作成しましたが参加に失敗しました（code: ${e.response ? e.response.status : 'unknown'}）。`;
+        if (e.response) {
+          this.resultTitle = '参加失敗';
+          this.resultText = `フラワースタンドを作成しましたが参加に失敗しました（code: ${e.response.status}）。`;
+        } else {
+          this.$router.push('/error');
+        }
       }
     }
 
