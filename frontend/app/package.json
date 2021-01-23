@@ -27,7 +27,7 @@
     "@vue/eslint-config-typescript": "^5.0.2",
     "axios": "^0.21.1",
     "cli-highlight": "^2.1.10",
-    "core-js": "^3.8.2",
+    "core-js": "^3.8.3",
     "dayjs": "^1.10.3",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.4.1",
