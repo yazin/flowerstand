@@ -48,7 +48,7 @@
     "vue-scrollto": "^2.20.0",
     "vue-social-sharing": "^3.0.7",
     "vue-template-compiler": "^2.6.11",
-    "vuetify": "^2.5.0",
+    "vuetify": "^2.5.1",
     "vuetify-loader": "^1.7.2"
   },
   "devDependencies": {
