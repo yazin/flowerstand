@@ -46,7 +46,7 @@
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.5.1",
     "vue-scrollto": "^2.20.0",
-    "vue-social-sharing": "^3.0.7",
+    "vue-social-sharing": "^3.0.8",
     "vue-template-compiler": "^2.6.11",
     "vuetify": "^2.5.0",
     "vuetify-loader": "^1.7.2"
