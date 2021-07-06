@@ -35,7 +35,7 @@
     "highlight.js": "^10.7.2",
     "node-sass": "^5.0.0",
     "sass": "^1.32.13",
-    "sass-loader": "^10.1.1",
+    "sass-loader": "^12.1.0",
     "typescript": "~4.2.4",
     "vee-validate": "^3.4.5",
     "vue": "^2.6.11",
