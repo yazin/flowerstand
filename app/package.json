@@ -29,7 +29,7 @@
     "@types/uuid": "^8.3.0",
     "aws-sdk": "^2.906.0",
     "axios": "^0.21.1",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.19.2",
     "cli-highlight": "^2.1.11",
     "cors": "^2.8.5",
     "dotenv": "^9.0.2",
