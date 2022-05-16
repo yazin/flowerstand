@@ -27,7 +27,7 @@
     "@types/sharp": "^0.28.1",
     "@types/text-to-svg": "^3.1.0",
     "@types/uuid": "^8.3.0",
-    "aws-sdk": "^2.906.0",
+    "aws-sdk": "^2.1135.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cli-highlight": "^2.1.11",
